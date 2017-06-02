@@ -1,0 +1,30 @@
+{
+  "name": "pimatic-tradfri",
+  "description": "Pimatic plugin for tradfri  support",
+  "author": "<treban> <Kosta>  ##trebankosta@gmail.com##",
+  "main": "tradfri",
+  "files": [
+    "tradfri.coffee",
+    "README.md",
+    "LICENSE",
+    "tradfri-config-schema.coffee",
+    "device-config-schema.coffee"
+  ],
+  "version": "0.1.0",
+  "homepage": "https://github.com/treban/pimatic-tradfri",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pimatic/pimatic-tradfri.git"
+  },
+  "configSchema": "tradfri-config-schema.coffee",
+  "dependencies": {
+    "tradfri-coapdtls": "^0.0.1"
+  },
+  "peerDependencies": {
+    "pimatic": "0..*"
+  },
+  "engines": {
+    "node": ">0.8.x",
+    "npm": ">1.1.x"
+  }
+}
