@@ -47,4 +47,4 @@ Changing the colore will be the next implementation step.
 * implement observation of device changes from the tradfri remote
 
 ### ChangeLog
-* 0.0.6 - first public alpha version
+* 0.1.6 - first public alpha version
