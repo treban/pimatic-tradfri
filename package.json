@@ -10,7 +10,7 @@
     "tradfri-config-schema.coffee",
     "device-config-schema.coffee"
   ],
-  "version": "0.1.0",
+  "version": "0.1.2",
   "homepage": "https://github.com/treban/pimatic-tradfri",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "tradfri-coapdtls": "^0.0.2"
+    "tradfri-coapdtls": ">0.0.6"
   },
   "engines": {
     "node": ">0.8.x",
