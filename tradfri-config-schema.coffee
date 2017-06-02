@@ -12,7 +12,7 @@ module.exports = {
       type: "string"
       required: yes
     debug:
-      description: "libcoat library path"
+      description: "debug switch"
       type: "boolean"
       required: no
 }
