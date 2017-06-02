@@ -10,7 +10,7 @@
     "tradfri-config-schema.coffee",
     "device-config-schema.coffee"
   ],
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "https://github.com/treban/pimatic-tradfri",
   "repository": {
     "type": "git",
