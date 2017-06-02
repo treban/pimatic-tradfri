@@ -1,4 +1,3 @@
-# This is an plugin to send xmpp messages and recieve commands from the admin
 
 module.exports = (env) ->
 
