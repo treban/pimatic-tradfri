@@ -18,7 +18,7 @@
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "tradfri-coapdtls": ">0.0.6"
+    "tradfri-coapdtls": "=>0.0.6"
   },
   "engines": {
     "node": ">0.8.x",
