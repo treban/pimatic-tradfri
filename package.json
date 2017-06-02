@@ -18,10 +18,7 @@
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "tradfri-coapdtls": "^0.0.1"
-  },
-  "peerDependencies": {
-    "pimatic": "0..*"
+    "tradfri-coapdtls": "^0.0.2"
   },
   "engines": {
     "node": ">0.8.x",
