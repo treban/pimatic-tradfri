@@ -14,7 +14,7 @@
   "homepage": "https://github.com/treban/pimatic-tradfri",
   "repository": {
     "type": "git",
-    "url": "git://github.com/pimatic/pimatic-tradfri.git"
+    "url": "git://github.com/treban/pimatic-tradfri.git"
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
