@@ -34,7 +34,7 @@ You can load the plugin by adding following in the config.json from your pimatic
       "plugin": "tradfri",
       "secID": "GATEWAY KEY",
       "hubIP": "GATEWAY IP",
-      "rampup" 50
+      "rampup" 50,
       "debug": true
     }
 
@@ -56,17 +56,17 @@ So if the lights are not syncron, the lights will change the state not in same w
 
 ### ToDoList
 * implement color control over slider
-* detection if gateway or lights goes offline and show it on the gui
+* detection if lights are reachable and show it on the gui
 * GUI Optimization
 
 ### ChangeLog
 * 0.1.6 - first public alpha version
 
 * 0.1.7 - New functions:
-          -Control light temperature
-          -Observing changes
-          -Goup function
-          -Gateway check
-          -Support for more lights
-          Code refactoring
-          Bugfixes
+          * Control light temperature
+          * Observing changes
+          * Goup function
+          * Gateway check
+          * Support for more lights
+          * ode refactoring
+          * ugfixes
