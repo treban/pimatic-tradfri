@@ -1,15 +1,22 @@
 pimatic-tradfri
 =======================
 
-> **alpha stadium !**
+> **beta stadium !**
+> Use it with care
 
 This plugin provides an tradfri interface for [pimatic](https://pimatic.org/).
 
-You must have a tradfri ip gateway in your network.
+#### IMPORTANT
+
+The plugin needs a rumpup delay configured in the plugin section.
+A good value is how long pimatic needs to be full loaded.
 
 ####Features
-* Discover devices
+* Discover devices and groups
+* Tradfri Hub as presence device available
 * Control lights
+* Control groups
+* observe changes
 
 ###Installation
 
@@ -27,24 +34,39 @@ You can load the plugin by adding following in the config.json from your pimatic
       "plugin": "tradfri",
       "secID": "GATEWAY KEY",
       "hubIP": "GATEWAY IP",
+      "rampup" 50
       "debug": true
     }
-
 
 ###Usages
 
 Install the tradfri gateway in your network and make an normal initialization over
-the tradfri smartphone app.
+the tradfri smartphone app. If wanted with groups.
 
 After the lights are paired with the gateway, go to the pimatic screen and
 make an autodiscover.
 
-Currently only dimming the light is possible.
-Changing the colore will be the next implementation step.
+###NOTES
+
+Sometimes the Tradfri Gatway doesn't inform the observers about new devices states.
+I think the stability off the gatway will be improved in newer firmware releases.
+
+If you press the power button of the 5-button remote, the remote toggles the group.
+So if the lights are not syncron, the lights will change the state not in same way.
 
 ### ToDoList
-* implement color control
-* implement observation of device changes from the tradfri remote
+* implement color control over slider
+* detection if gateway or lights goes offline and show it on the gui
+* GUI Optimization
 
 ### ChangeLog
 * 0.1.6 - first public alpha version
+
+* 0.1.7 - New functions:
+          -Control light temperature
+          -Observing changes
+          -Goup function
+          -Gateway check
+          -Support for more lights
+          Code refactoring
+          Bugfixes

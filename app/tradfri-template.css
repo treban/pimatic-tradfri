@@ -1,0 +1,59 @@
+
+li.sortable.tradfri-device label {
+  float: left;
+}
+
+ul.items .ui-slider-input{
+  display: none;
+}
+
+ul.items .tradfri-device div.item-inner .ui-slider-track {
+  margin-left: 22px;
+  margin-right: 8px;
+}
+
+ul.items .tradfri-device .ui-slider {
+  float: right;
+  margin: 1px 4px -1px 5px;
+  width: 15em;
+}
+
+ul.items .tradfri-device .ui-dimlevel {
+  float: right;
+  min-height: 30px;
+}
+ul.items .tradfri-device .ui-temp {
+  float: right;
+  min-height: 30px;
+}
+
+ul.items .tradfri-device .ui-dimlevel .ui-slider-track {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+
+ul.items .tradfri-device .ui-dimlevel .ui-slider-track .ui-slider-bg {
+  background: none;
+}
+
+ul.items .tradfri-device .ui-color .ui-slider-track {
+  background: linear-gradient(to right, hsl(195, 100%, 85%), White, hsl(51, 100%, 85%));
+}
+ul.items .tradfri-device .ui-color .ui-slider-bg {
+  background: none;
+}
+
+ul.items .tradfri-device .ui-dimlevel .ui-slider-track .ui-slider-bg {
+  background: none;
+}
+
+ul.items .tradfri-device .ui-temp .wbutton {
+  background-color: #efd275;
+}
+
+ul.items .tradfri-device .ui-temp .nbutton {
+  background-color: #f1e0b5;
+}
+
+ul.items .tradfri-device .ui-temp .cbutton {
+  background-color: #f5faf6;
+}
