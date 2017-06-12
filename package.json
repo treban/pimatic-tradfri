@@ -16,7 +16,7 @@
     "app/tradfri-template.coffee",
     "app/tradfri-template.jade"
   ],
-  "version": "0.1.7",
+  "version": "0.1.8",
   "homepage": "https://github.com/treban/pimatic-tradfri",
   "repository": {
     "type": "git",
