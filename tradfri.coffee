@@ -7,18 +7,18 @@ module.exports = (env) ->
 
   tradfriHub = null
   tradfriReady = false
-  rempup = 0
 
   class TradfriPlugin extends env.plugins.Plugin
 
     init: (app, @framework, @config) =>
       env.logger.info("Plugin initialization...")
-      secID = @config.secID
-      hubIP = @config.hubIP
-      rempup = if @config.rampup? then @config.rampup else 60
+      @secID = @config.secID
+      @hubIP = @config.hubIP
       framework = @framework
+      first=true
+      @newready=true
 
-      env.logger.debug ("tradfri cfg: Gateway IP: #{hubIP} KEY: #{secID}")
+      env.logger.debug ("tradfri cfg: Gateway IP: #{@hubIP} KEY: #{@secID}")
 
       deviceConfigDef = require("./device-config-schema.coffee")
       @framework.deviceManager.registerDeviceClass("TradfriHub", {
@@ -37,6 +37,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.TradfriGroup,
         createCallback: (config, lastState) => new TradfriGroup(config, @, @framework, lastState)
       })
+      #@framework.deviceManager.registerDeviceClass("TradfriMotion", {
+      #  configDef: deviceConfigDef.TradfriGroup,
+      #  createCallback: (config, lastState) => new TradfriGroup(config, @, @framework, lastState)
+      #})
 
       @framework.on "after init", =>
         mobileFrontend = @framework.pluginManager.getPlugin 'mobile-frontend'
@@ -49,75 +53,111 @@ module.exports = (env) ->
 
       @framework.deviceManager.on 'discover', (eventData) =>
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices"
-        tradfriHub.getAllDevices().then( (devices)=>
-          #env.logger.debug("Devices:")
-          #env.logger.debug(devices)
-          devices.forEach((device) =>
-            #env.logger.debug (device)
-            @lclass = "TradfriDimmer"
-            @lclass = switch
-              when device[3][1] == "TRADFRI bulb E27 WS opal 980lm" then "TradfriDimmerTempButton"
-              when device[3][1] == "TRADFRI bulb E14 WS opal 400lm" then "TradfriDimmerTempButton"
-              when device[3][1] == "TRADFRI bulb GU10 WS 400lm" then "TradfriDimmerTempButton"
-              when device[3][1] == "TRADFRI bulb E27 WS clear 950lm" then "TradfriDimmerTempButton"
-            config = {
-                  class: @lclass
-            }
-            config.name=device['9001']
-            config.id="tradfri_#{device['9003']}"
-            config.address=device['9003']
-            #env.logger.debug(config)
-            if (device[5750] != 0)
-              @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "LIGHT: #{config.name} - #{device[3][1]}", config )
-            )
-        ).catch( (err) =>
-          env.logger.err ("DeviceDiscover #{err}")
-        )
-
-        tradfriHub.getAllGroups().then( (groups)=>
-          #env.logger.debug("Groups:")
-          #env.logger.debug(groups)
-          groups.forEach((group) =>
-            #env.logger.debug (group)
-            config = {
-                  class: "TradfriGroup"
-            }
-            config.name=group['9001']
-            config.id="tradfri_#{group['9003']}"
-            config.address=group['9003']
-            #env.logger.debug(config)
-            @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "GROUP: #{config.name}", config )
+        if (tradfriReady)
+          tradfriHub.getAllDevices().then( (devices)=>
+            #env.logger.debug("Devices:")
+            #env.logger.debug(devices)
+            devices.forEach((device) =>
+              @lclass = switch
+                when device[3][1] == "TRADFRI bulb E27 WS opal 980lm" then "TradfriDimmerTempButton"
+                when device[3][1] == "TRADFRI bulb E14 WS opal 400lm" then "TradfriDimmerTempButton"
+                when device[3][1] == "TRADFRI bulb GU10 WS 400lm" then "TradfriDimmerTempButton"
+                when device[3][1] == "TRADFRI bulb E27 WS clear 950lm" then "TradfriDimmerTempButton"
+                when device[3][1] == "TRADFRI bulb E27 opal 1000lm" then "TradfriDimmer"
+                when device[3][1] == "TTRADFRI motion sensor" then "TradfriMotion"
+                else "TradfriDimmer"
+              config = {
+                    class: @lclass
+              }
+              config.name=device['9001']
+              config.id="tradfri_#{device['9003']}"
+              config.address=device['9003']
+              env.logger.debug(config)
+              if (device[5750] == 2)
+                @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "LIGHT: #{config.name} - #{device[3][1]}", config )
+              )
+              #if (device[5750] == 4)
+              #  @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "Motion: #{config.name} - #{device[3][1]}", config )
+              #)
+          ).catch( (err) =>
+            env.logger.err ("DeviceDiscover #{err}")
           )
-        ).catch( (err) =>
-            env.logger.err(err)
-        )
 
-        tradfriHub.getGatewayInfo().then( (gw) =>
-          config = {
-                class: "TradfriHub"
-          }
-          config.name= "TradfriHub"
-          config.id= "tradfri_hub"
-          config.ntpserver= gw['9023']
-          #env.logger.debug(config)
-          @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "GATEWAY: #{config.name} - #{hubIP}", config )
-        ).catch (err) =>
-          env.logger.debug (err)
+          tradfriHub.getAllGroups().then( (groups)=>
+            #env.logger.debug("Groups:")
+            #env.logger.debug(groups)
+            groups.forEach((group) =>
+              #env.logger.debug (group)
+              config = {
+                    class: "TradfriGroup"
+              }
+              config.name=group['9001']
+              config.id="tradfri_#{group['9003']}"
+              config.address=group['9003']
+              env.logger.debug(config)
+              @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "GROUP: #{config.name}", config )
+            )
+          ).catch( (err) =>
+              env.logger.err(err)
+          )
+
+          tradfriHub.getGatewayInfo().then( (gw) =>
+            config = {
+                  class: "TradfriHub"
+            }
+            config.name= "TradfriHub"
+            config.id= "tradfri_hub"
+            config.ntpserver= gw['9023']
+            #env.logger.debug(config)
+            @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "GATEWAY: #{config.name} - #{@hubIP}", config )
+          ).catch( (err) =>
+            # env.logger.debug("error")
+            env.logger.error(err)
+          )
+        else
+          @framework.deviceManager.discoverMessage 'pimatic-tradfri', "gateway not reachable"
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices finished"
 
-      setTimeout ( =>
-        tradfriHub = new TradfriCoapdtls({securityId: secID,hubIpAddress: hubIP}, (val) =>
-          tradfriHub.getGatewayInfo().then( (res) =>
-            env.logger.info("Tradfri gateway is reachable!")
-            env.logger.debug("Firmware: #{res['9029']}")
-            env.logger.info("Tradfri plugin ready")
-            tradfriReady=true
-            @emit 'ready'
-          ).catch( (error) =>
-            env.logger.error ("Gateway is not reachable : #{error}")
-          )
+      reconnect = setInterval ( =>
+        if (!tradfriReady)
+          if (!first)
+            env.logger.debug("...connection error!")
+            tradfriHub.finish()
+          first=false
+          env.logger.debug("Try to connect to Tradfri")
+          @connect()
+        else
+          if(@newready)
+            tradfriHub.getGatewayInfo().then( (res) =>
+              @newready=true
+            ).catch( (err) =>
+              @_setPresence(false)
+              @emit 'error', (err)
+            )
+          else
+            @emit 'error'
+          @newready=false
+      ),10000
+
+      @.on 'error', (err) =>
+        env.logger.error("Tradfri gateway is not reachable anymore!")
+        tradfriHub.finish(true)
+        tradfriReady=false
+        @newready=true
+
+    connect: =>
+      tradfriHub = new TradfriCoapdtls({securityId: @secID,hubIpAddress: @hubIP}, (val) =>
+        tradfriHub.getGatewayInfo().then( (res) =>
+          env.logger.debug("Gateway online - Firmware: #{res['9029']}")
+          env.logger.debug("Tradfri plugin ready")
+          tradfriReady=true
+          @newready=true
+          @emit 'ready'
+        ).catch( (error) =>
+          env.logger.error ("Gateway is not reachable!")
+          tradfriReady=false
         )
-      ),rempup*1000
+      )
 
     @toHex: (d) =>
       return ("0"+(Number(d).toString(16))).slice(-2).toUpperCase()
@@ -125,6 +165,10 @@ module.exports = (env) ->
 
   Tradfri_connection = new TradfriPlugin
 
+
+##############################################################
+# Tradfri HUB
+##############################################################
 
   class TradfriHub extends env.devices.Sensor
 
@@ -134,15 +178,12 @@ module.exports = (env) ->
       @ntpserver = @config.ntpserver
       @_presence = lastState?.presence?.value or false
       super()
-      @intervalId = setInterval ( =>
-        if (tradfriReady)
-          tradfriHub.getGatewayInfo().then( (res) =>
-            @_setPresence(true)
-            env.logger.debug("Gateway is reachable")
-          ).catch ( (err) =>
-            @_setPresence(false)
-          )
-      ), 120000
+
+      Tradfri_connection.on 'ready', =>
+        @_setPresence(true)
+
+      Tradfri_connection.on 'error', =>
+        @_setPresence(false)
 
     destroy: ->
       super()
@@ -163,9 +204,39 @@ module.exports = (env) ->
 
     template: "presence"
 
-
 ##############################################################
-# TradfriDimmerTempSliderItem
+# Tradfri HUB
+##############################################################
+#
+#  class TradfriMotion extends env.devices.Sensor
+#
+#    constructor: (@config,lastState) ->
+#      @name = @config.name
+#      @id = @config.id
+#      @_presence = lastState?.presence?.value or false
+#      super()
+#
+#    destroy: ->
+#      super()
+#      clearTimeout @intervalId
+#
+#    attributes:
+#      presence:
+#        description: "motion"
+#        type: t.boolean
+#        labels: ['motion', 'nothing']
+#
+#    _setPresence: (value) ->
+#      if @_presence is value then return
+#      @_presence = value
+#      @emit 'presence', value
+#
+#    getPresence: -> Promise.resolve(@_presence)
+#
+#    template: "presence"
+#
+##############################################################
+# TradfriDimmer
 ##############################################################
 
   class TradfriDimmer extends env.devices.DimmerActuator
@@ -199,21 +270,20 @@ module.exports = (env) ->
     getTemplateName: -> "tradfridimmer-dimmer"
 
     turnOn: ->
-      env.logger.debug("TurnOn")
       @changeDimlevelTo(@_lastdimlevel)
 
     turnOff: ->
-      env.logger.debug("TurnOFF")
       @changeDimlevelTo(0)
 
     observer: (res) =>
       env.logger.debug ("New device values received for #{@name}")
-      #env.logger.debug (res)
-      if ( isNaN(res['3311'][0]['5850']))
-        env.logger.debug ("Light is online")
+      if (!res['9019'])
+        env.logger.debug ("Light #{@name} is offline")
+      else if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) )
+        env.logger.debug ("Light #{@name} is online")
       else
         env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'])
-        if ( res['3311'][0]['5850'] == 0 )
+        if ( ! res['3311'][0]['5850'] )
           @_setDimlevel(0)
         else
           @_setDimlevel(Math.round((res['3311'][0]['5851'])/(2.55)))
@@ -222,8 +292,8 @@ module.exports = (env) ->
       super()
 
     changeDimlevelTo: (level) ->
-      env.logger.debug ("changeDimlevelTo")
-      env.logger.debug (level)
+      #env.logger.debug ("changeDimlevelTo")
+      #env.logger.debug (level)
       if @_dimlevel is level then return Promise.resolve true
       if level is 0
         state = off
@@ -232,16 +302,18 @@ module.exports = (env) ->
       unless @_dimlevel is 0
         @_lastdimlevel = @_dimlevel
       bright=Math.round(level*(2.55))
-      tradfriHub.setDevice(@address, {
-        state: state,
-        brightness: bright
-      }).then( (res) =>
-        env.logger.debug ("New value send to device")
-        env.logger.debug ({          state: state,          brightness: bright        })
-        @_setDimlevel(level)
-      ).catch( (error) =>
-        env.logger.error ("set device error: #{error}")
-      )
+      if (tradfriReady)
+        tradfriHub.setDevice(@address, {
+          state: state,
+          brightness: bright
+        }).then( (res) =>
+          env.logger.debug ("New value send to device")
+          env.logger.debug ({          state: state,          brightness: bright        })
+          @_setDimlevel(level)
+        ).catch( (error) =>
+          env.logger.error ("set device error: #{error}")
+          Tradfri_connection.emit 'error', (error)
+        )
 
 ##############################################################
 # TradfriSwitch
@@ -272,11 +344,11 @@ module.exports = (env) ->
     observer: (res) =>
       env.logger.debug ("New device values received for #{@name}")
       #env.logger.debug (res)
-      if ( isNaN(res['3311'][0]['5850']))
+      if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) )
         env.logger.debug ("Light is now online")
       else
-        env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'])
-        if ( res['3311'][0]['5850'] == 0 )
+        env.logger.debug ("DeON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'])
+        if ( ! res['3311'][0]['5850'] )
           @_setState(false)
         else
           @_setState(true)
@@ -285,16 +357,18 @@ module.exports = (env) ->
       super()
 
     changeStateTo: (state) ->
-      tradfriHub.setDevice(@address, {
-        state: state,
-        brightness: bright
-      }).then( (res) =>
-        env.logger.debug ("New value send to group")
-        @_setState(state)
-        return Promise.resolve()
-      ).catch( (error) =>
-        env.logger.error ("set device error: #{error}")
-      )
+      if (tradfriReady)
+        tradfriHub.setDevice(@address, {
+          state: state,
+          brightness: "255"
+        }).then( (res) =>
+          env.logger.debug ("New value send to device")
+          @_setState(state)
+          return Promise.resolve()
+        ).catch( (error) =>
+          env.logger.error ("set device error: #{error}")
+          Tradfri_connection.emit 'error', (error)
+        )
 
 
 
@@ -334,13 +408,14 @@ module.exports = (env) ->
       @blue = TradfriPlugin.toHex(rgb.blue)
 
       @_color = color
-
-      tradfriHub.setColor(@address, @_color
-      ).then( (res) =>
-        env.logger.debug ("New Color send to device")
-        #env.logger.debug (res)
-      ).catch (error) =>
-        env.logger.error ("set device error: #{error}")
+      if (tradfriReady)
+        tradfriHub.setColor(@address, @_color
+        ).then( (res) =>
+          env.logger.debug ("New Color send to device")
+          #env.logger.debug (res)
+        ).catch( (error) =>
+          env.logger.error ("set device error: #{error}")
+        )
 
     destroy: ->
       super()
@@ -373,16 +448,16 @@ module.exports = (env) ->
         when color == "normal" then "f1e0b5"
         when color == "warm" then "efd275"
         when color == "cold" then "f5faf6"
-      #env.logger.debug ("SetColor")
-      #env.logger.debug (@colorval)
       @_color = @colorval
-
-      tradfriHub.setColorHex(@address, @_color
-      ).then( (res) =>
-        env.logger.debug ("New Color send to device")
-        #env.logger.debug (res)
-      ).catch (error) =>
-        env.logger.error ("set device error: #{error}")
+      if (tradfriReady)
+        tradfriHub.setColorHex(@address, @_color
+        ).then( (res) =>
+          env.logger.debug ("New Color send to device")
+          #env.logger.debug (res)
+        ).catch( (error) =>
+          env.logger.error ("set device error: #{error}")
+          Tradfri_connection.emit 'error', (error)
+        )
 
     destroy: ->
       super()
@@ -399,10 +474,11 @@ module.exports = (env) ->
 
     makeObserver: ->
       tradfriHub.setObserverGroup(@address,@observer).then (res) =>
-        env.logger.debug ("Obeserving now the device #{@config.name}")
+        env.logger.debug ("Obeserving now the group #{@config.name}")
         #env.logger.debug (res)
       .catch( (error) =>
         env.logger.error ("Observe device error : #{error}")
+        Tradfri_connection.emit 'error', (error)
       )
 
     destroy: ->
@@ -417,15 +493,17 @@ module.exports = (env) ->
         @_setState(true)
 
     changeStateTo: (state) ->
-      tradfriHub.setGroup(@address, {
-        state: if state then 1 else 0
-      }).then( (res) =>
-        env.logger.debug ("New value send to group")
-        @_setState(state)
-        return Promise.resolve()
-      ).catch( (error) =>
-        env.logger.error ("set device error: #{error}")
-      )
+      if (tradfriReady)
+        tradfriHub.setGroup(@address, {
+          state: if state then 1 else 0
+        }).then( (res) =>
+          env.logger.debug ("New value send to group")
+          @_setState(state)
+          return Promise.resolve()
+        ).catch( (error) =>
+          env.logger.error ("set group error: #{error}")
+          Tradfri_connection.emit 'error', (error)
+        )
 
 
   return Tradfri_connection

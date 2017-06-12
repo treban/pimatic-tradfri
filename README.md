@@ -6,17 +6,14 @@ pimatic-tradfri
 
 This plugin provides an tradfri interface for [pimatic](https://pimatic.org/).
 
-#### IMPORTANT
-
-The plugin needs a rumpup delay configured in the plugin section.
-A good value is how long pimatic needs to be full loaded.
 
 ####Features
 * Discover devices and groups
 * Tradfri Hub as presence device available
-* Control lights
+* Control lights (also with temperature)
 * Control groups
 * observe changes
+* autoreconnect on errors
 
 ###Installation
 
@@ -34,7 +31,6 @@ You can load the plugin by adding following in the config.json from your pimatic
       "plugin": "tradfri",
       "secID": "GATEWAY KEY",
       "hubIP": "GATEWAY IP",
-      "rampup" 50,
       "debug": true
     }
 
@@ -58,15 +54,23 @@ So if the lights are not syncron, the lights will change the state not in same w
 * implement color control over slider
 * detection if lights are reachable and show it on the gui
 * GUI Optimization
+* soft change to new color
+* some action providers for some devices
+* controle the gateway
 
 ### ChangeLog
 * 0.1.6 - first public alpha version
 
 * 0.1.7 - New functions:
-          * Control light temperature
-          * Observing changes
-          * Goup function
-          * Gateway check
-          * Support for more lights
-          * ode refactoring
-          * ugfixes
+  * Control light temperature
+  * Observing changes
+  * Goup function
+  * Gateway check
+  * Support for more lights
+  * code refactoring
+  * bugfixes
+
+* 0.1.8:
+  * code refactoring
+  * autoreconnect
+  * bugfixes

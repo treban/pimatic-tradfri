@@ -11,10 +11,6 @@ module.exports = {
       description: "Hub IP"
       type: "string"
       required: yes
-    rampup:
-      description: "rampup delay"
-      type: "integer"
-      required: yes
     debug:
       description: "debug switch"
       type: "boolean"
