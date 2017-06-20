@@ -35,10 +35,10 @@
   "bugs": {
     "url": "https://github.com/treban/pimatic-tradfri/issues"
   },
-  "_id": "pimatic-tradfri@0.1.7",
+  "_id": "pimatic-tradfri@0.1.8",
   "scripts": {},
-  "_shasum": "9036d414dbbda5d89088d28723cd00f9045872b3",
-  "_from": "pimatic-tradfri@0.1.7",
+  "_shasum": "46f831b9ef57d1f3cb141f1375bb4525325b994a",
+  "_from": "pimatic-tradfri@0.1.8",
   "_npmVersion": "3.5.2",
   "_nodeVersion": "4.2.6",
   "_npmUser": {
@@ -46,8 +46,8 @@
     "email": "trebankosta@gmail.com"
   },
   "dist": {
-    "shasum": "9036d414dbbda5d89088d28723cd00f9045872b3",
-    "tarball": "https://registry.npmjs.org/pimatic-tradfri/-/pimatic-tradfri-0.1.7.tgz"
+    "shasum": "46f831b9ef57d1f3cb141f1375bb4525325b994a",
+    "tarball": "https://registry.npmjs.org/pimatic-tradfri/-/pimatic-tradfri-0.1.8.tgz"
   },
   "maintainers": [
     {
@@ -57,8 +57,9 @@
   ],
   "_npmOperationalInternal": {
     "host": "s3://npm-registry-packages",
-    "tmp": "tmp/pimatic-tradfri-0.1.7.tgz_1496903318177_0.9230749714188278"
+    "tmp": "tmp/pimatic-tradfri-0.1.8.tgz_1497301733545_0.6893410270567983"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/pimatic-tradfri/-/pimatic-tradfri-0.1.7.tgz"
+  "_resolved": "https://registry.npmjs.org/pimatic-tradfri/-/pimatic-tradfri-0.1.8.tgz",
+  "readme": "ERROR: No README data found!"
 }

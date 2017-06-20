@@ -1,47 +1,50 @@
 script#tradfridimmer-dimmer-template(type='text/template')
-  li.sortable.device.no-header.tradfri-device.tempbutton
-    label.device-label(data-bind="text: name, tooltip: $data.labelTooltipHtml")
-    .controls.no-carousel-slide
-      .control-elements
-        div.ui-dimlevel
-          select.switch(data-bind="attr: { id: switchId }, value: switchState")
-            option(value="off")=__('Off')
-            option(value="on")=__('On')
-          input.ddimmer(min="0", max="100", step="1", data-highlight="true",
-            data-bind="attr: { id: dsliderId }, value: dsliderValue")
-      span.error(data-bind="text: ($data.error() ? $data.error() : '') ")
+  li.sortable.no-header.tradfri-device
+    div.item-inner
+      label.device-label(data-bind="text: name, tooltip: $data.labelTooltipHtml")
+      div.ui-dimlevel
+        select.switch(data-bind="attr: { id: switchId }, value: switchState")
+          option(value="off")=__('Off')
+          option(value="on")=__('On')
+        span.presence(data-bind="template: {name: 'attribute-template', data: $data.device.getAttribute('presence'), afterRender: $data.afterAttributeRender }")
+        div.ui-smallspacer
+        input.ddimmer(min="0", max="100", step="1", data-highlight="true",
+          data-bind="attr: { id: dsliderId }, value: dsliderValue")
 
-script#tradfridimmer-tempsilider-template(type='text/template')
-  li.sortable.device.no-header.tradfri-device.tempbutton
-    label.device-label(data-bind="text: name, tooltip: $data.labelTooltipHtml")
-    .controls.no-carousel-slide
-      .control-elements
-        div.ui-dimlevel
-          select.switch(data-bind="attr: { id: switchId }, value: switchState")
-            option(value="off")=__('Off')
-            option(value="on")=__('On')
-          input.ddimmer(min="0", max="100", step="1", data-highlight="true",
-            data-bind="attr: { id: dsliderId }, value: dsliderValue")
-        div.ui-color
-          input.cdimmer(min="24000", max="33000", step="100", data-highlight="true",
-            data-bind="attr: { id: csliderId }, value: csliderValue")
-      span.error(data-bind="text: ($data.error() ? $data.error() : '') ")
+script#tradfridimmer-temp-template(type='text/template')
+  li.sortable.no-header.tradfri-device
+    div.item-inner
+      label.device-label(data-bind="text: name, tooltip: $data.labelTooltipHtml")
+      div.ui-dimlevel
+        select.switch(data-bind="attr: { id: switchId }, value: switchState")
+          option(value="off")=__('Off')
+          option(value="on")=__('On')
+        span.presence(data-bind="template: {name: 'attribute-template', data: $data.device.getAttribute('presence'), afterRender: $data.afterAttributeRender }")
+        div.ui-smallspacer
+        input.ddimmer(min="0", max="100", step="1", data-highlight="true",
+          data-bind="attr: { id: dsliderId }, value: dsliderValue")
+      div.ui-color
+        div.ui-spacer
+        input.cdimmer(min="0", max="100", step="1", data-highlight="true",
+          data-bind="attr: { id: csliderId }, value: csliderValue")
 
-script#tradfridimmer-temp-buttons-template(type='text/template')
-  li.sortable.device.no-header.tradfri-device.tempbutton
-    label.device-label(data-bind="text: name, tooltip: $data.labelTooltipHtml")
-    .controls.no-carousel-slide
-      .control-elements
-        div.ui-dimlevel
-          select.switch(data-bind="attr: { id: switchId }, value: switchState")
-            option(value="off")=__('Off')
-            option(value="on")=__('On')
-          input.ddimmer(min="0", max="100", step="1", data-highlight="true",
-            data-bind="attr: { id: dsliderId }, value: dsliderValue")
-        div.ui-temp
-          .button-control.ui-controlgroup.ui-controlgroup-horizontal.ui-corner-all.ui-mini.no-carousel-slide(data-role='controlgroup', data-type='horizontal', data-mini='true', data-enhanced='true')
-            .ui-controlgroup-controls
-              a.ui-first-child.ui-btn.ui-corner-all.wbutton(name='warmButton', data-bind='click: setWarm') Warm
-              a.ui-btn.ui-corner-all.nbutton(name='normalButton', data-bind='click: setNormal') Normal
-              a.ui-last-child.ui-btn.ui-corner-all.cbutton(name='coldButton', data-bind='click: setCold') Cold
-      span.error(data-bind="text: ($data.error() ? $data.error() : '') ")
+
+script#tradfridimmer-temp-buttons-template(type='text/template  ')
+  li.sortable.no-header.tradfri-device
+    div.item-inner
+      label.device-label(data-bind="text: name, tooltip: $data.labelTooltipHtml")
+      div.ui-dimlevel
+        select.switch(data-bind="attr: { id: switchId }, value: switchState")
+          option(value="off")=__('Off')
+          option(value="on")=__('On')
+        span.presence(data-bind="template: {name: 'attribute-template', data: $data.device.getAttribute('presence'), afterRender: $data.afterAttributeRender }")
+        div.ui-smallspacer
+        input.ddimmer(min="0", max="100", step="1", data-highlight="true",
+          data-bind="attr: { id: dsliderId }, value: dsliderValue")
+      div.ui-temp
+        div.ui-spacer
+        .button-control.ui-controlgroup.ui-controlgroup-horizontal.ui-corner-all.ui-mini.no-carousel-slide(data-role='controlgroup', data-type='horizontal', data-mini='true', data-enhanced='true')
+          .ui-controlgroup-controls
+            a.ui-first-child.ui-btn.ui-corner-all.wbutton(name='warmButton', data-bind='click: setWarm') Warm
+            a.ui-btn.ui-corner-all.nbutton(name='normalButton', data-bind='click: setNormal') Normal
+            a.ui-last-child.ui-btn.ui-corner-all.cbutton(name='coldButton', data-bind='click: setCold') Cold

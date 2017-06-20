@@ -15,14 +15,10 @@ ul.items .tradfri-device div.item-inner .ui-slider-track {
 ul.items .tradfri-device .ui-slider {
   float: right;
   margin: 1px 4px -1px 5px;
-  width: 15em;
+  width: 12em;
 }
 
 ul.items .tradfri-device .ui-dimlevel {
-  float: right;
-  min-height: 30px;
-}
-ul.items .tradfri-device .ui-temp {
   float: right;
   min-height: 30px;
 }
@@ -46,6 +42,29 @@ ul.items .tradfri-device .ui-dimlevel .ui-slider-track .ui-slider-bg {
   background: none;
 }
 
+ul.items .tradfri-device div.ui-spacer {
+  width: 115px;
+  height: 30px;
+  margin-left: 10px;
+  float: right;
+}
+
+
+ul.items .tradfri-device .ui-color {
+  float: right;
+  clear: right;
+  min-height: 30px;
+  margin-top: 8px;
+}
+
+ul.items .tradfri-device .ui-temp {
+  float: right;
+  clear: right;
+  min-height: 30px;
+  margin-top: 8px;
+}
+
+
 ul.items .tradfri-device .ui-temp .wbutton {
   background-color: #efd275;
 }
@@ -56,4 +75,22 @@ ul.items .tradfri-device .ui-temp .nbutton {
 
 ul.items .tradfri-device .ui-temp .cbutton {
   background-color: #f5faf6;
+}
+
+ul.items .tradfri-device .presence {
+  float: right;
+  margin-top: 6px;
+}
+
+ul.items .tradfri-device div.ui-smallspacer {
+  width: 10px;
+  height: 5px;
+  float: right;
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width:380px){
+    ul.items .tradfri-device .ui-slider {
+      width: 10em;
+    }
 }

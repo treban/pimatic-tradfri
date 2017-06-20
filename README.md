@@ -8,12 +8,15 @@ This plugin provides an tradfri interface for [pimatic](https://pimatic.org/).
 
 
 ####Features
-* Discover devices and groups
+* Discover devices, groups, and scenes
 * Tradfri Hub as presence device available
-* Control lights (also with temperature)
+* Control lights (also with temperature stepless)
 * Control groups
-* observe changes
-* autoreconnect on errors
+* Observe changes
+* Scenes/moods per Group
+* Action providers for all features
+* Presence check for lights
+* Configurable transition time for smooth changes
 
 ###Installation
 
@@ -42,6 +45,15 @@ the tradfri smartphone app. If wanted with groups.
 After the lights are paired with the gateway, go to the pimatic screen and
 make an autodiscover.
 
+###Action Providers
+
+This plugin uses mostly the normal pimatic devices classes. 
+Only one special provider is needed. 
+
+"set color from LIGHTNAME to [0..100]
+0=COLD
+100=WARM
+
 ###NOTES
 
 Sometimes the Tradfri Gatway doesn't inform the observers about new devices states.
@@ -51,12 +63,8 @@ If you press the power button of the 5-button remote, the remote toggles the gro
 So if the lights are not syncron, the lights will change the state not in same way.
 
 ### ToDoList
-* implement color control over slider
-* detection if lights are reachable and show it on the gui
-* GUI Optimization
-* soft change to new color
-* some action providers for some devices
 * controle the gateway
+* 
 
 ### ChangeLog
 * 0.1.6 - first public alpha version
@@ -74,3 +82,11 @@ So if the lights are not syncron, the lights will change the state not in same w
   * code refactoring
   * autoreconnect
   * bugfixes
+
+* 0.1.9:
+  * Scenes/Moods
+  * Stepless light temperature change
+  * New device option: transition time for smooth changes
+  * Action provider for all features
+  * Presence of lights
+  * GUI optimization
