@@ -6,7 +6,8 @@ module.exports = (env) ->
   t = env.require('decl-api').types
   _ = env.require 'lodash'
   M = env.matcher
-
+  # Require the  bluebird promise library
+  Promise = env.require 'bluebird'
 
   tradfriHub = null
   tradfriReady = false
@@ -372,7 +373,7 @@ module.exports = (env) ->
       unless @_dimlevel is 0
         @_lastdimlevel = @_dimlevel
       @_setDimlevel(level)
-      return @_setval(state,bright)
+      return Promise.resolve(@_setval(state,bright))
 
 
     _setval: (state,bright) ->
