@@ -25,7 +25,7 @@
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
     "p-throttle": "^1.1.0",
-    "tradfri-coapdtls": ">=0.0.8"
+    "tradfri-coapdtls": ">=0.0.11"
   },
   "engines": {
     "node": ">0.8.x",
