@@ -16,7 +16,7 @@
     "app/tradfri-template.coffee",
     "app/tradfri-template.jade"
   ],
-  "version": "0.1.9",
+  "version": "0.1.8",
   "homepage": "https://github.com/treban/pimatic-tradfri",
   "repository": {
     "type": "git",
@@ -24,7 +24,8 @@
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "tradfri-coapdtls": ">=0.0.10"
+    "p-throttle": "^1.1.0",
+    "tradfri-coapdtls": ">=0.0.8"
   },
   "engines": {
     "node": ">0.8.x",

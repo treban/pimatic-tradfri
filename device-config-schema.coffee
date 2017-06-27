@@ -31,9 +31,9 @@ module.exports = {
       ntpserver:
         description: "Gateway ntp server"
         type: "string"
-  }
-  TradfriMotion: {
-    title: "Tradfri Motion Device"
+  },
+  TradfriActor: {
+    title: "Tradfri Remote/MotionSensor"
     type: "object"
     properties:
       address:

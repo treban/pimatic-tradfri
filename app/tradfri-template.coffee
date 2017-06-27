@@ -10,7 +10,7 @@ $(document).on "templateinit", (event) ->
       #DIMMER
       @getAttribute('presence').value.subscribe( =>
         @updateClass()
-      )      
+      )
       @dsliderId = "dimmer-#{templData.deviceId}"
       dimAttribute = @getAttribute('dimlevel')
       unless dimAttribute?
@@ -35,14 +35,15 @@ $(document).on "templateinit", (event) ->
       super(elements)
       @presenceEle = $(elements).find('.attr-presence')
       @updateClass()
-      @dsliderEle = $(elements).find('.ddimmer')
+      @dsliderEle = $(elements).find('#' + @dsliderId)
       @dsliderEle.slider()
       $(elements).find('.ui-slider').addClass('no-carousel-slide')
-      $('#index').on("slidestop", " #item-lists .ddimmer", (event) ->
-          dimmerDevice = ko.dataFor(this)
-          dimmerDevice.onSliderStop()
+      $('#index').on("slidestop", " #item-lists #"+@dsliderId , (event) ->
+          ddev = ko.dataFor(this)
+          ddev.onSliderStop()
           return
       )
+
     updateClass: ->
       value = @getAttribute('presence').value()
       if @presenceEle?
@@ -77,7 +78,6 @@ $(document).on "templateinit", (event) ->
       )
 
     onSliderStop2: ->
-      console.log("2")
       @csliderEle.slider('disable')
       @device.rest.setColor( {colorCode: @csliderValue()}, global: no).done(ajaxShowToast)
       .fail( =>
@@ -87,17 +87,14 @@ $(document).on "templateinit", (event) ->
       ).fail(ajaxAlertFail)
 
     afterRender: (elements) ->
-      @csliderEle = $(elements).find('.cdimmer')
+      @csliderEle = $(elements).find('#' + @csliderId)
       @csliderEle.slider()
       super(elements)
-
-      $('#index').on("slidestop", " #item-lists .cdimmer", (event) ->
-          dimmerDevice = ko.dataFor(this)
-          dimmerDevice.onSliderStop2()
+      $('#index').on("slidestop", " #item-lists #"+@csliderId, (event) ->
+          cddev = ko.dataFor(this)
+          cddev.onSliderStop2()
           return
       )
-
-
 
 ##############################################################
 # TradfriDimmerTempSliderItem

@@ -43,7 +43,7 @@ ul.items .tradfri-device .ui-dimlevel .ui-slider-track .ui-slider-bg {
 }
 
 ul.items .tradfri-device div.ui-spacer {
-  width: 115px;
+  width: 123px;
   height: 30px;
   margin-left: 10px;
   float: right;
@@ -88,7 +88,6 @@ ul.items .tradfri-device div.ui-smallspacer {
   float: right;
 }
 
-/* Mobile adjustments */
 @media only screen and (max-width:380px){
     ul.items .tradfri-device .ui-slider {
       width: 10em;
