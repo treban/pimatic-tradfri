@@ -4,7 +4,7 @@ pimatic-tradfri
 > **beta stadium !**
 > Use it with care
 
-This plugin provides an tradfri interface for [pimatic](https://pimatic.org/).
+This plugin provides a tradfri interface for [pimatic](https://pimatic.org/).
 
 
 #### Features
@@ -53,7 +53,6 @@ So if the lights are not syncron, the lights will change the state not in same w
 
 ### ToDoList
 * controle the gateway
-* check the status of remotes and motion sensors, with battery check
 
 ### ChangeLog
 * 0.1.6 - first public alpha version
@@ -79,4 +78,8 @@ So if the lights are not syncron, the lights will change the state not in same w
   * Action provider for all features
 
 * 0.1.10:
+  * BUG FIX
+
+* 0.1.11:
+  * Remote and motion sensor as presence device with battery observation
   * BUG FIX

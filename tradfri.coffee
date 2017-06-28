@@ -260,6 +260,8 @@ module.exports = (env) ->
             @_setPresence(true)
           else
             @_setPresence(false)
+          if (!isNaN(res['3']['9']))
+            @_setBattery(res['3']['9'])
         ).catch( (error) =>
           if (error == '4.04')
             env.logger.error ("Error getting status from device #{@name}: tradfri hub doesn't have configured this device")
@@ -269,8 +271,6 @@ module.exports = (env) ->
             Tradfri_connection.emit 'error', (error)
         )
 
-
-
     destroy: ->
       super()
 
@@ -279,14 +279,14 @@ module.exports = (env) ->
         description: "online reachability"
         type: t.boolean
         labels: ['present', 'absent']
-      batterystatus:
+      battery:
         description: "Battery status"
         type: t.number
 
-    _setBatterystatus: (value) ->
-      if @_presence is value then return
-      @_presence = value
-      @emit 'presence', value
+    _setBattery: (value) ->
+      if @_battery is value then return
+      @_battery = value
+      @emit 'battery', value
 
     _setPresence: (value) ->
       if @_presence is value then return
@@ -295,7 +295,7 @@ module.exports = (env) ->
 
     getPresence: -> Promise.resolve(@_presence)
 
-    getBatterystatus: -> Promise.resolve(@_presence)
+    getBattery: -> Promise.resolve(@_battery)
 
 
 ##############################################################
