@@ -12,9 +12,12 @@
     "LICENSE",
     "tradfri-config-schema.coffee",
     "device-config-schema.coffee",
+    "color.coffee",
     "app/tradfri-template.css",
     "app/tradfri-template.coffee",
-    "app/tradfri-template.jade"
+    "app/tradfri-template.jade",
+    "app/spectrum.css",
+    "app/spectrum.js"
   ],
   "version": "0.1.11",
   "homepage": "https://github.com/treban/pimatic-tradfri",
@@ -22,11 +25,9 @@
     "type": "git",
     "url": "git://github.com/treban/pimatic-tradfri.git"
   },
-  "license": "GPL-2.0",
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "p-throttle": "^1.1.0",
-    "tradfri-coapdtls": ">=0.0.12"
+    "tradfri-coapdtls": ">=0.0.13"
   },
   "engines": {
     "node": ">0.8.x",

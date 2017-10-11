@@ -88,6 +88,58 @@ ul.items .tradfri-device div.ui-smallspacer {
   float: right;
 }
 
+ul.items .tradfri-device div.ui-midspacer {
+  width: 30px;
+  height: 5px;
+  float: right;
+}
+
+ul.items .tradfri-device .ui-colorpicker div.sp-replacer {
+  height: 1.75em;
+  margin-left: auto;
+  margin-right: auto;
+  border: 0px;
+  background: none;
+  padding: 0px;
+  min-height: 30px;
+}
+
+ul.items .tradfri-device .ui-colorpicker div.sp-preview {
+  width: 123px;
+  height: 100%;
+  border-radius: 3em;
+  border-width: 0px;
+}
+
+ul.items .tradfri-device .ui-colorpicker div.ui-state-disabled {
+  box-shadow: 0px 0px 0px 2px silver;
+}
+
+ul.items .tradfri-device .ui-colorpicker div.sp-preview-inner {
+  border-radius: inherit;
+}
+
+ul.items .tradfri-device .ui-colorpicker div.sp-dd {
+  display: none;
+}
+
+/* Override Spectrum's value gradient to be invisible, as we ignore it anyway */
+div.sp-container div.sp-sat div.sp-val {
+  background-image: none;
+}
+
+div.sp-container {
+  border: 0px;
+  background-color: white;
+}
+
+ul.items .tradfri-device div.ui-colorpicker-spacer {
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
+  float: right;
+}
+
 @media only screen and (max-width:380px){
     ul.items .tradfri-device .ui-slider {
       width: 10em;

@@ -14,6 +14,8 @@ module.exports = (env) ->
   tradfriHub = null
   tradfriReady = false
 
+  Color = require('./color')(env)
+
   class TradfriPlugin extends env.plugins.Plugin
 
     init: (app, @framework, @config) =>
@@ -57,8 +59,13 @@ module.exports = (env) ->
        configDef: deviceConfigDef.TradfriActor,
        createCallback: (config, lastState) => new TradfriActor(config, @, @framework, lastState)
       })
+      @framework.deviceManager.registerDeviceClass("TradfriRGB", {
+       configDef: deviceConfigDef.TradfriDimmer,
+       createCallback: (config, lastState) => new TradfriRGB(config, @, @framework, lastState)
+      })
 
       @framework.ruleManager.addActionProvider(new TradfriDimmerTempActionProvider(@framework))
+      @framework.ruleManager.addActionProvider(new TradfriDimmerRGBActionProvider(@framework))
 
       @framework.on "after init", =>
         mobileFrontend = @framework.pluginManager.getPlugin 'mobile-frontend'
@@ -66,6 +73,8 @@ module.exports = (env) ->
           mobileFrontend.registerAssetFile 'js', "pimatic-tradfri/app/tradfri-template.coffee"
           mobileFrontend.registerAssetFile 'html', "pimatic-tradfri/app/tradfri-template.jade"
           mobileFrontend.registerAssetFile 'css', "pimatic-tradfri/app/tradfri-template.css"
+          mobileFrontend.registerAssetFile 'js', "pimatic-tradfri/app/spectrum.js"
+          mobileFrontend.registerAssetFile 'css', "pimatic-tradfri/app/spectrum.css"
         else
           env.logger.warn "pimatic tradfri could not find the mobile-frontend. No gui will be available"
 
@@ -80,6 +89,7 @@ module.exports = (env) ->
                 when device[3][1] == "TRADFRI bulb GU10 WS 400lm" then "TradfriDimmerTemp"
                 when device[3][1] == "TRADFRI bulb E27 WS clear 950lm" then "TradfriDimmerTemp"
                 when device[3][1] == "TRADFRI bulb E27 opal 1000lm" then "TradfriDimmer"
+                when device[3][1] == "TRADFRI bulb E27 CWS opal 600lm" then "TradfriRGB"
                 when device[3][1] == "TRADFRI remote control" then "TradfriActor"
                 when device[3][1] == "TRADFRI motion sensor" then "TradfriActor"
                 else "TradfriDimmer"
@@ -362,17 +372,18 @@ module.exports = (env) ->
         if (!@getPresence())
           env.logger.debug ("Light #{@name} is online")
         @_setPresence(true)
-        if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) )
-        else
-          env.logger.debug ("New device values received for #{@name}")
-          env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'])
-          if ( ! res['3311'][0]['5850'] )
-            @_setDimlevel(0)
+        if (typeof res['3311'] != "undefined" && res['3311'] != null)
+          if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) )
           else
-            @val = Math.round((res['3311'][0]['5851'])/(2.54))
-            if @val is 0
-              @val = 1
-            @_setDimlevel(@val)
+            env.logger.debug ("New device values received for #{@name}")
+            env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'])
+            if ( ! res['3311'][0]['5850'] )
+              @_setDimlevel(0)
+            else
+              @val = Math.round((res['3311'][0]['5851'])/(2.54))
+              if @val is 0
+                @val = 1
+              @_setDimlevel(@val)
 
     _setPresence: (value) ->
       if @_presence is value then return
@@ -420,6 +431,8 @@ module.exports = (env) ->
             Tradfri_connection.emit 'error', (error)
           return Promise.reject()
         )
+      else
+        return Promise.reject()
 
 ##############################################################
 # TradfriSwitch
@@ -454,14 +467,15 @@ module.exports = (env) ->
     observer: (res) =>
       env.logger.debug ("New device values received for #{@name}")
       #env.logger.debug (res)
-      if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) )
-        env.logger.debug ("Light is now online")
-      else
-        env.logger.debug ("DeON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'])
-        if ( ! res['3311'][0]['5850'] )
-          @_setState(false)
+      if (typeof res['3311'] != "undefined" && res['3311'] != null)
+        if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) )
+          env.logger.debug ("Light is now online")
         else
-          @_setState(true)
+          env.logger.debug ("DeON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'])
+          if ( ! res['3311'][0]['5850'] )
+            @_setState(false)
+          else
+            @_setState(true)
 
     destroy: ->
       super()
@@ -483,6 +497,8 @@ module.exports = (env) ->
             Tradfri_connection.emit 'error', (error)
           return Promise.reject()
         )
+      else
+        return Promise.reject()
 
 
 
@@ -494,6 +510,8 @@ module.exports = (env) ->
 
     min = 24933
     max = 33137
+    mink = 2697
+    maxk = 4009
     @_color = 0
 
     template: 'tradfridimmer-temp'
@@ -518,21 +536,22 @@ module.exports = (env) ->
         if (!@getPresence())
           env.logger.debug ("Light #{@name} is online")
         @_setPresence(true)
-        if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) or isNaN(res['3311'][0]['5709']) )
-        else
-          env.logger.debug ("New device values received for #{@name}")
-          ncol=res['3311']['0']['5709']
-          ncol=(ncol-min)/(max-min)
-          ncol=Math.min(Math.max(ncol, 0), 1)
-          @_setColor(Math.round(ncol*100))
-          env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'] + ", color: " + @_color)
-          if ( ! res['3311'][0]['5850'] )
-            @_setDimlevel(0)
+        if (typeof res['3311'] != "undefined" && res['3311'] != null)
+          if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) or isNaN(res['3311'][0]['5709']) )
           else
-            @val = Math.round((res['3311'][0]['5851'])/(2.54))
-            if @val is 0
-              @val = 1
-            @_setDimlevel(@val)
+            env.logger.debug ("New device values received for #{@name}")
+            ncol=res['3311']['0']['5709']
+            ncol=(ncol-min)/(max-min)
+            ncol=Math.min(Math.max(ncol, 0), 1)
+            @_setColor(Math.round(ncol*100))
+            env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'] + ", color: " + @_color)
+            if ( ! res['3311'][0]['5850'] )
+              @_setDimlevel(0)
+            else
+              @val = Math.round((res['3311'][0]['5851'])/(2.54))
+              if @val is 0
+                @val = 1
+              @_setDimlevel(@val)
 
     getTemplateName: -> "tradfridimmer-temp"
 
@@ -548,13 +567,13 @@ module.exports = (env) ->
 
     setColor: (color) =>
       if @_color is color then return Promise.resolve true
-      ncolor= Math.round (min + color / 100 * (max-min))
+      ncolor= Math.round (min + (color) / 100 * (max-min))
       @_setColor(color)
       return Promise.resolve(@sendColor(ncolor))
 
     sendColor: (color) ->
       if (tradfriReady)
-        tradfriHub.setColorXY(@address, color, @_transtime
+        tradfriHub.setColorTemp(@address, color, @_transtime
         ).then( (res) =>
           env.logger.debug ("New Color send to device #{color}")
           return Promise.resolve()
@@ -566,6 +585,220 @@ module.exports = (env) ->
             Tradfri_connection.emit 'error', (error)
           return Promise.reject()
         )
+      else
+        return Promise.reject()
+
+    destroy: ->
+      super()
+
+    xyY_to_kelvin = (x, y) =>
+      n = (x/65535-0.3320) / (y/65535-0.1858)
+      kelvin = parseInt((-449*n**3 + 3525*n**2 - 6823.3*n + 5520.33) + 0.5)
+
+    kelvin_to_xy = (T, white_spectrum_bulb=false) =>
+      if T <= 4000
+        x = -0.2661239*(10**9)/T**3 - 0.2343589*(10**6)/T**2 + 0.8776956*(10**3)/T + 0.17991
+      else if T <= 25000
+        x = -3.0258469*(10**9)/T**3 + 2.1070379*(10**6)/T**2 + 0.2226347*(10**3)/T + 0.24039
+
+      if T <= 2222
+        y = -1.1063814*x**3 - 1.3481102*x**2 + 2.18555832*x - 0.20219683
+      else if T <= 4000
+        y = -0.9549476*x**3 - 1.37418593*x**2 + 2.09137015*x - 0.16748867
+      else if T <= 25000
+        y = 3.081758*x**3 - 5.8733867*x**2 + 3.75112997*x - 0.37001483
+
+      xr = x*65535+0.5
+      yr = y*65535+0.5
+
+      [
+        parseInt(xr)
+        parseInt(yr)
+      ]
+
+
+##############################################################
+# TradfriDimmerTempSliderItem
+##############################################################
+
+  class TradfriRGB extends TradfriDimmer
+
+    cmin = 24933
+    cmax = 33137
+    min = 2000
+    max = 4700
+
+    @_color = 0
+    @_hue = 0
+    @_sat = 0
+    template: 'tradfridimmer-rgb'
+
+    constructor: (@config, @plugin, @framework, lastState) ->
+      @addAttribute  'color',
+          description: "color Temperature",
+          type: t.number
+      @addAttribute  'hue',
+          description: "color Temperature",
+          type: t.number
+      @addAttribute  'sat',
+          description: "color Temperature",
+          type: t.number
+
+      @actions.setColor =
+        description: 'set light color'
+        params:
+          colorCode:
+            type: t.number
+      @actions.setHuesat =
+        description: 'set light color'
+        params:
+          hue:
+            type: t.number
+          sat:
+            type: t.number
+          val:
+            type: t.number
+      @actions.setRGB =
+        description: 'set light color'
+        params:
+          r:
+            type: t.number
+          g:
+            type: t.number
+          b:
+            type: t.number
+      @actions.setHue =
+        description: 'set light color'
+        params:
+          hue:
+            type: t.number
+      @actions.setSat =
+        description: 'set light color'
+        params:
+          sat:
+            type: t.number
+      super(@config, @plugin, @framework, lastState)
+
+    observer: (res) =>
+      if (!res['9019'])
+        env.logger.debug ("Light #{@name} is offline")
+        @_setPresence(false)
+      else
+        if (!@getPresence())
+          env.logger.debug ("Light #{@name} is online")
+        @_setPresence(true)
+        if (typeof res['3311'] != "undefined" && res['3311'] != null)
+          if ( isNaN(res['3311'][0]['5850']) or isNaN(res['3311'][0]['5851']) or isNaN(res['3311'][0]['5709']) )
+          else
+            env.logger.debug ("New device values received for #{@name}")
+            ncol=res['3311']['0']['5709']
+            ncol=(ncol-cmin)/(cmax-cmin)
+            ncol=Math.min(Math.max(ncol, 0), 1)
+            @_setColor(Math.round(ncol*100))
+            env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'] + ", color: " + @_color)
+            if ( ! res['3311'][0]['5850'] )
+              @_setDimlevel(0)
+            else
+              @val = Math.round((res['3311'][0]['5851'])/(2.54))
+              if @val is 0
+                @val = 1
+              @_setDimlevel(@val)
+
+    getTemplateName: -> "tradfridimmer-rgb"
+
+    getColor: -> Promise.resolve(@_color)
+
+    _setColor: (color) =>
+      cassert(not isNaN(color))
+      cassert color >= 0
+      cassert color <= 100
+      if @_color is color then return
+      @_color = color
+      @emit "color", color
+
+    _setHue: (hueVal) ->
+      hueVal = parseFloat(hueVal)
+      assert not isNaN(hueVal)
+      assert 0 <= hueVal <= 100
+      unless @_hue is hueVal
+        @_hue = hueVal
+        @emit "hue", hueVal
+
+    _setSat: (satVal) ->
+      satVal = parseFloat(satVal)
+      assert not isNaN(satVal)
+      assert 0 <= satVal <= 100
+      unless @_sat is satVal
+        @_sat = satVal
+        @emit "sat", satVal
+
+    getHue: -> Promise.resolve(@_hue)
+
+    getSat: -> Promise.resolve(@_sat)
+
+
+    setColor: (color) =>
+      env.logger.debug (color)
+      if @_color is color then return Promise.resolve true
+      ncolor=Math.round (min + Math.abs(color-100) / 100 * (max-min))
+      env.logger.debug (ncolor)
+      tcolor=Color.kelvin_to_xy(ncolor)
+      env.logger.debug (tcolor)
+      ncolor=Math.round (cmin + color / 100 * (cmax-cmin))
+      @_setColor(color)
+      return Promise.resolve(@sendColor(tcolor,ncolor))
+
+    sendColor: (color,xcol) ->
+      if (tradfriReady)
+        tradfriHub.setColorXY(@address, parseInt(xcol), parseInt(color[1]), @_transtime
+        #tradfriHub.setColorTemp(@address, color, @_transtime
+        ).then( (res) =>
+          env.logger.debug ("New Color send to device1 #{color}")
+          return Promise.resolve()
+        ).catch( (error) =>
+          if (error == "4.05")
+            env.logger.error ("set device #{@name} error: tradfri hub doesn't have configured this device")
+          else
+            env.logger.error ("set device #{@name} error: gateway not reachable")
+            Tradfri_connection.emit 'error', (error)
+          return Promise.reject()
+        )
+      else
+        return Promise.reject()
+
+    # h=0-360,s=0-1,l=0-1
+    setHuesat: (h,s,l=0.75) ->
+      rgb=Color.hslToRgb(h,s,l)
+      xy=Color.rgb_to_xyY(rgb[0],rgb[1],rgb[2])
+      if (tradfriReady)
+        tradfriHub.setColorXY(@address, parseInt(xy[0]), parseInt(xy[1]), @_transtime
+        ).then( (res) =>
+          env.logger.debug ("New Color send to device")
+          return Promise.resolve()
+        )
+      else
+        return Promise.reject()
+
+    setColorHex: (hex) ->
+      if (tradfriReady)
+        tradfriHub.setColorHex(@address, hex, @_transtime
+        ).then( (res) =>
+          env.logger.debug ("New Color send to device")
+          return Promise.resolve()
+        )
+      else
+        return Promise.reject()
+
+    setRGB: (r,g,b) ->
+      xy=Color.rgb_to_xyY(r,g,b)
+      if (tradfriReady)
+        tradfriHub.setColorXY(@address, parseInt(xy[0]), parseInt(xy[1]), @_transtime
+        ).then( (res) =>
+          env.logger.debug ("New Color send to device")
+          return Promise.resolve()
+        )
+      else
+        return Promise.reject()
 
     destroy: ->
       super()
@@ -603,12 +836,10 @@ module.exports = (env) ->
     destroy: ->
       super()
 
-
-
 ##############################################################
 # Tradfri Group
 ##############################################################
-  class TradfriGroup extends TradfriSwitch
+  class TradfriGroup extends TradfriDimmer
 
     constructor: (@config, @plugin, @framework, lastState) ->
       super(@config, @plugin, @framework, lastState)
@@ -636,13 +867,14 @@ module.exports = (env) ->
       else
         @_setState(true)
 
-    changeStateTo: (state) ->
+    _setval: (state,bright) ->
       if (tradfriReady)
         tradfriHub.setGroup(@address, {
-          state: if state then 1 else 0
+          state: state,
+          brightness: bright
         },@_transtime).then( (res) =>
-          env.logger.debug ("New value send to group")
-          @_setState(state)
+          env.logger.debug ("New value send to device")
+          env.logger.debug ({          state: state,          brightness: bright        })
           return Promise.resolve()
         ).catch( (error) =>
           if (error == "4.05")
@@ -652,6 +884,8 @@ module.exports = (env) ->
             Tradfri_connection.emit 'error', (error)
           return Promise.reject()
         )
+      else
+        return Promise.reject()
 
   class TradfriGroupScene extends env.devices.ButtonsDevice
 
@@ -681,6 +915,8 @@ module.exports = (env) ->
                 env.logger.error ("set device #{@name} error: gateway not reachable")
                 Tradfri_connection.emit 'error', (error)
             )
+          else
+            return Promise.reject()
           return Promise.resolve()
       throw new Error("No button with the id #{buttonId} found")
 
@@ -732,7 +968,7 @@ module.exports = (env) ->
         ], device.config.class
       ).value()
 
-      m = M(input, context).match(['set color '])
+      m = M(input, context).match(['set color temp '])
 
       device = null
       color = null
@@ -772,6 +1008,77 @@ module.exports = (env) ->
           token: match
           nextInput: input.substring(match.length)
           actionHandler: new TradfriDimmerTempActionHandler(@framework, device, valueTokens)
+        }
+      else
+      return null
+
+  class TradfriDimmerRGBActionHandler extends env.actions.ActionHandler
+
+    constructor: (@framework, @device, @hex) ->
+      assert @device?
+      assert @hex?
+      @result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(@hex)
+      @r = parseInt(@result[1], 16)
+      @g = parseInt(@result[2], 16)
+      @b = parseInt(@result[3], 16)
+
+    setup: ->
+      @dependOnDevice(@device)
+      super()
+
+    _doExecuteAction: (simulate) =>
+      return (
+        if simulate
+          __("would set color %s to %s%", @device.name)
+        else
+          @device.setRGB(@r,@g,@b).then( => __("set color %s to %s", @device.name, @hex) )
+      )
+
+    executeAction: (simulate) =>
+        return @_doExecuteAction(simulate)
+
+    hasRestoreAction: -> yes
+
+    executeRestoreAction: (simulate) => Promise.resolve(@_doExecuteAction(simulate, @lastValue))
+
+
+  class TradfriDimmerRGBActionProvider extends env.actions.ActionProvider
+    constructor: (@framework) ->
+      super()
+
+    parseAction: (input, context) =>
+      TradfriDevices = _(@framework.deviceManager.devices).values().filter(
+        (device) => _.includes [
+          'TradfriRGB'
+        ], device.config.class
+      ).value()
+
+      m = M(input, context).match(['set color rgb '])
+
+      device = null
+      hex = null
+      match = null
+      r = null
+      g = null
+      b = null
+
+      m.matchDevice TradfriDevices, (m, d) ->
+        if device? and device.id isnt d.id
+          context?.addError(""""#{input.trim()}" is ambiguous.""")
+          return
+        device = d
+        m.match [' to '], (m) ->
+          m.or [
+            (m) -> m.match [/(#[a-fA-F\d]{6})(.*)/], (m, s) ->
+              hex = s.trim()
+              match = m.getFullMatch()
+          ]
+      if match?
+        assert hex?
+        return {
+          token : match
+          nextInput: input.substring(match.length)
+          actionHandler: new TradfriDimmerRGBActionHandler(@framework, device, hex)
         }
       else
       return null

@@ -99,6 +99,62 @@ $(document).on "templateinit", (event) ->
 ##############################################################
 # TradfriDimmerTempSliderItem
 ##############################################################
+  class TradfriDimmerRGBItem extends TradfriDimmerSliderItem
+    constructor: (templData, @device) ->
+      super(templData, @device)
+      @_colorChanged = false
+      #COLOR
+      @csliderId = "color-#{templData.deviceId}"
+      colorAttribute = @getAttribute('color')
+      unless colorAttribute?
+        throw new Error("A dimmer device needs an color attribute!")
+      color = colorAttribute.value
+      @csliderValue = ko.observable(if color()? then color() else 0)
+      colorAttribute.value.subscribe( (newColor) =>
+        @csliderValue(newColor)
+        pimatic.try => @csliderEle.slider('refresh')
+      )
+      @pickId = "pick-#{templData.deviceId}"
+
+    onSliderStop2: ->
+      @csliderEle.slider('disable')
+      @device.rest.setColor( {colorCode: @csliderValue()}, global: no).done(ajaxShowToast)
+      .fail( =>
+        pimatic.try => @csliderEle.val(@getAttribute('color').value()).slider('refresh')
+      ).always( =>
+        pimatic.try( => @csliderEle.slider('enable'))
+      ).fail(ajaxAlertFail)
+
+    afterRender: (elements) ->
+      @csliderEle = $(elements).find('#' + @csliderId)
+      @csliderEle.slider()
+      super(elements)
+      $('#index').on("slidestop", " #item-lists #"+@csliderId, (event) ->
+          cddev = ko.dataFor(this)
+          cddev.onSliderStop2()
+          return
+      )
+      $(elements).on("dragstop.spectrum","#"+@pickId, (color) =>
+          @_changeColor(color)
+      )
+      @colorPicker = $(elements).find('.light-color')
+      @colorPicker.spectrum
+        preferredFormat: 'rgb'
+        showButtons: false
+        allowEmpty: true
+      $('.sp-container').addClass('ui-corner-all ui-shadow')
+
+    _changeColor: (color) ->
+      r = @colorPicker.spectrum('get').toRgb()['r']
+      g = @colorPicker.spectrum('get').toRgb()['g']
+      b = @colorPicker.spectrum('get').toRgb()['b']
+      return @device.rest.setRGB(
+          {r: r, g: g, b: b}, global: no
+        ).then(ajaxShowToast, ajaxAlertFail)
+
+##############################################################
+# TradfriDimmerTempSliderItem
+##############################################################
   class TradfriDimmerTempButtonItem extends TradfriDimmerSliderItem
     constructor: (templData, @device) ->
       super(templData, @device)
@@ -124,3 +180,4 @@ $(document).on "templateinit", (event) ->
   pimatic.templateClasses['tradfridimmer-dimmer'] = TradfriDimmerSliderItem
   pimatic.templateClasses['tradfridimmer-temp'] = TradfriDimmerTempSliderItem
   pimatic.templateClasses['tradfridimmer-temp-buttons'] = TradfriDimmerTempButtonItem
+  pimatic.templateClasses['tradfridimmer-rgb'] = TradfriDimmerRGBItem
