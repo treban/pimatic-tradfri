@@ -33,34 +33,14 @@
     "node": ">0.8.x",
     "npm": ">1.1.x"
   },
-  "gitHead": "323134d6485fcbf835b6c9f1774e5b0248d3998c",
   "bugs": {
     "url": "https://github.com/treban/pimatic-tradfri/issues"
   },
-  "_id": "pimatic-tradfri@0.1.10",
   "scripts": {},
-  "_shasum": "a458c83ac044ee00ba6d0f0455341a08a9d76dd5",
-  "_from": "pimatic-tradfri@0.1.10",
-  "_npmVersion": "3.5.2",
-  "_nodeVersion": "4.2.6",
-  "_npmUser": {
-    "name": "treban",
-    "email": "trebankosta@gmail.com"
-  },
-  "dist": {
-    "shasum": "a458c83ac044ee00ba6d0f0455341a08a9d76dd5",
-    "tarball": "https://registry.npmjs.org/pimatic-tradfri/-/pimatic-tradfri-0.1.10.tgz"
-  },
   "maintainers": [
     {
       "name": "treban",
       "email": "trebankosta@gmail.com"
     }
-  ],
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages",
-    "tmp": "tmp/pimatic-tradfri-0.1.10.tgz_1498604194503_0.7180828382261097"
-  },
-  "directories": {},
-  "_resolved": "https://registry.npmjs.org/pimatic-tradfri/-/pimatic-tradfri-0.1.10.tgz"
+  ]
 }
