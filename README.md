@@ -95,3 +95,6 @@ So if the lights are not syncron, the lights will change the state not in same w
   * RGB Support
   * Dimming slider for groups
 
+* 0.1.13: 
+  * BUG FIX
+
