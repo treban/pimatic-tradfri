@@ -3,6 +3,8 @@ pimatic-tradfri
 
 This plugin provides a tradfri interface for [pimatic](https://pimatic.org/).
 
+IMPORTANT:
+This plugin needs at least gateway version 1.2.42 !
 
 #### Features
 * Discover devices, groups, and scenes
@@ -26,10 +28,14 @@ This plugin depends on tradfri-coapdtls.
 
 You can load the plugin by adding following in the config.json from your pimatic server:
 
+PSK and identity dont have to be filled!
+
     {
       "plugin": "tradfri",
       "secID": "GATEWAY KEY",
       "hubIP": "GATEWAY IP",
+      "identity": ""
+      "psk": ""
       "debug": true
     }
 
@@ -48,8 +54,13 @@ set color rgb <dev> to <#0011ff>   (rgb value in hex with leading hash )
 
 ### NOTES
 
+The first connection to the gateway creates a session key.
+This key with a uniq identifier is automatically stored in the configuration file.
+If you have problems with your connection,
+remove the psk from the config.
+
 Sometimes the Tradfri Gatway doesn't inform the observers about new devices states.
-I think the stability off the gatway will be improved in newer firmware releases.
+I think that the stability of the gateway in newer firmware versions is improved.
 
 If you press the power button of the 5-button remote, the remote toggles the group.
 So if the lights are not syncron, the lights will change the state not in same way.
@@ -95,6 +106,9 @@ So if the lights are not syncron, the lights will change the state not in same w
   * RGB Support
   * Dimming slider for groups
 
-* 0.1.13: 
+* 0.1.13:
   * BUG FIX
+
+* 0.1.14:
+  * Support for gateway version 1.2.42
 

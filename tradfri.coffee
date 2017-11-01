@@ -18,17 +18,21 @@ module.exports = (env) ->
 
   class TradfriPlugin extends env.plugins.Plugin
 
+    @cfg = null
+
     init: (app, @framework, @config) =>
       env.logger.info("Plugin initialization...")
       @secID = @config.secID
       @hubIP = @config.hubIP
+      @psk = @config.psk
+      @identity = @config.identity
+      @cfg=@config
       framework = @framework
       first=true
-      @newready=true
 
-      env.logger.debug ("tradfri cfg: Gateway IP: #{@hubIP} KEY: #{@secID}")
+      @newready=false
 
-      tradfriHub = new TradfriCoapdtls({securityId: @secID,hubIpAddress: @hubIP})
+      env.logger.debug ("tradfri cfg: Gateway IP: #{@hubIP}")
 
       deviceConfigDef = require("./device-config-schema.coffee")
       @framework.deviceManager.registerDeviceClass("TradfriHub", {
@@ -67,6 +71,8 @@ module.exports = (env) ->
       @framework.ruleManager.addActionProvider(new TradfriDimmerTempActionProvider(@framework))
       @framework.ruleManager.addActionProvider(new TradfriDimmerRGBActionProvider(@framework))
 
+      #@framework.on('destroy', (context) =>
+      #)
       @framework.on "after init", =>
         mobileFrontend = @framework.pluginManager.getPlugin 'mobile-frontend'
         if mobileFrontend?
@@ -158,6 +164,7 @@ module.exports = (env) ->
           @framework.deviceManager.discoverMessage 'pimatic-tradfri', "gateway not reachable"
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices finished"
 
+      @connect()
       reconnect = setInterval ( =>
         if (!tradfriReady)
           if (!first)
@@ -185,21 +192,46 @@ module.exports = (env) ->
         tradfriReady=false
         @newready=true
 
-    connect: =>
-      tradfriHub = new TradfriCoapdtls({securityId: @secID,hubIpAddress: @hubIP})
-      tradfriHub.connect().then( (val)=>
-        tradfriHub.getGatewayInfo().then( (res) =>
-          env.logger.debug("Gateway online - Firmware: #{res['9029']}")
-          env.logger.debug("Tradfri plugin ready")
-          tradfriReady=true
-          @newready=true
-          @emit 'ready'
-        ).catch( (error) =>
-          env.logger.error ("Gateway is not reachable!")
-          env.logger.error (error)
-          tradfriReady=false
+    uniqueId: (length=8) =>
+      id = ""
+      id += Math.random().toString(36).substr(2) while id.length < length
+      id.substr 0, length
+
+    connect: () =>
+      if (@psk == undefined or @psk == "" or @psk == null)
+        env.logger.debug("PSK Handshake...")
+        @identity=@uniqueId(12)
+        @cfg.identity=@identity
+        tradfriHub = new TradfriCoapdtls({securityId: @secID,hubIpAddress: @hubIP, clientId: "Client_identity"})
+        tradfriHub.connect().then( (val)=>
+          tradfriHub.initPSK(@identity).then( (res) =>
+            env.logger.debug("Gateway online - PSK Handshake successful: #{res['9091']}")
+            env.logger.debug("Establish secure connection... ")
+            @psk=res['9091']
+            @cfg.psk=@psk
+            @framework.pluginManager.updatePluginConfig 'tradfri', @cfg
+            env.logger.debug("PSK saved to config")
+            @connect()
+          ).catch( (error) =>
+            env.logger.error ("Gateway is not reachable!")
+            env.logger.error (error)
+          )
         )
-      )
+      else
+        tradfriHub = new TradfriCoapdtls({securityId: @psk,hubIpAddress: @hubIP,clientId: @identity})
+        tradfriHub.connect().then( (val)=>
+          tradfriHub.getGatewayInfo().then( (res) =>
+            env.logger.debug("Gateway online - Firmware: #{res['9029']}")
+            env.logger.debug("Tradfri plugin ready")
+            tradfriReady=true
+            @newready=true
+            @emit 'ready'
+          ).catch( (error) =>
+            env.logger.error ("Gateway is not reachable!")
+            env.logger.error (error)
+            tradfriReady=false
+          )
+        )
 
   Tradfri_connection = new TradfriPlugin
 
@@ -210,12 +242,14 @@ module.exports = (env) ->
   class TradfriHub extends env.devices.Sensor
 
     template: "presence"
+    _presence: undefined
 
     constructor: (@config,lastState) ->
       @name = @config.name
       @id = @config.id
       @ntpserver = @config.ntpserver
       @_presence = lastState?.presence?.value or false
+      @_psk = lastState?.psk?.value or false
       super()
 
       Tradfri_connection.on 'ready', =>
@@ -233,10 +267,25 @@ module.exports = (env) ->
         type: t.boolean
         labels: ['present', 'absent']
 
+    actions:
+      getPresence:
+        description: "Returns the current presence state"
+        returns:
+          presence:
+            type: t.boolean
+      changePresenceTo:
+        params:
+          presence:
+            type: "boolean"
+
     _setPresence: (value) ->
       if @_presence is value then return
       @_presence = value
       @emit 'presence', value
+
+    changePresenceTo: (presence) ->
+      @_setPresence(presence)
+      return Promise.resolve()
 
     getPresence: -> Promise.resolve(@_presence)
 

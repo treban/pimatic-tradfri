@@ -11,6 +11,14 @@ module.exports = {
       description: "Hub IP"
       type: "string"
       required: yes
+    identity:
+      description: "generated at first connect"
+      type: "string"
+      required: no
+    psk:
+      description: "generated at first connect"
+      type: "string"
+      required: no
     debug:
       description: "debug switch"
       type: "boolean"
