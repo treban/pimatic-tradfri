@@ -52,9 +52,7 @@ module.exports = (env) ->
         return [ parseInt(X*65535+0.5)/total , parseInt(Y*65535+0.5)/total, parseInt(Y*65535+0.5)/total ]
 
     @kelvin_to_xy = (T) =>
-# Sources: "Design of Advanced Color - Temperature Control System
-#           for HDTV Applications" [Lee, Cho, Kim]
-# and https://en.wikipedia.org/wiki/Planckian_locus#Approximation
+# Source https://en.wikipedia.org/wiki/Planckian_locus#Approximation
 # and http://fcam.garage.maemo.org/apiDocs/_color_8cpp_source.html
       if T <= 4000
         x = -0.2661239*(10**9)/T**3 - 0.2343589*(10**6)/T**2 + 0.8776956*(10**3)/T + 0.17991
