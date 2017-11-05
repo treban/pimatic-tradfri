@@ -29,6 +29,9 @@
   "dependencies": {
     "tradfri-coapdtls": ">=0.0.13"
   },
+  "peerDependencies": {
+    "pimatic": ">=0.9.0"
+  },
   "engines": {
     "node": ">0.8.x",
     "npm": ">1.1.x"

@@ -112,3 +112,6 @@ So if the lights are not syncron, the lights will change the state not in same w
 * 0.1.14:
   * Support for gateway version 1.2.42
 
+* 0.1.15:
+  * BUG FIX (#18)
+  * compatibility warning removed

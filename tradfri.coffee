@@ -557,10 +557,12 @@ module.exports = (env) ->
 
   class TradfriDimmerTemp extends TradfriDimmer
 
-    min = 24933
-    max = 33137
-    mink = 2697
-    maxk = 4009
+    cmin = 24933
+    cmax = 33137
+    min = 2000
+    max = 4700
+
+    @_color = 0
     @_color = 0
 
     template: 'tradfridimmer-temp'
@@ -590,7 +592,7 @@ module.exports = (env) ->
           else
             env.logger.debug ("New device values received for #{@name}")
             ncol=res['3311']['0']['5709']
-            ncol=(ncol-min)/(max-min)
+            ncol=(ncol-cmin)/(cmax-cmin)
             ncol=Math.min(Math.max(ncol, 0), 1)
             @_setColor(Math.round(ncol*100))
             env.logger.debug ("ON/OFF: " + res['3311'][0]['5850'] + ", brightness: " + res['3311'][0]['5851'] + ", color: " + @_color)
@@ -614,17 +616,21 @@ module.exports = (env) ->
       @_color = color
       @emit "color", color
 
+
     setColor: (color) =>
       if @_color is color then return Promise.resolve true
-      ncolor= Math.round (min + (color) / 100 * (max-min))
+      ncolor=Math.round (min + Math.abs(color-100) / 100 * (max-min))
+      tcolor=Color.kelvin_to_xy(ncolor)
+      ncolor=Math.round (cmin + color / 100 * (cmax-cmin))
       @_setColor(color)
-      return Promise.resolve(@sendColor(ncolor))
+      return Promise.resolve(@sendColor(tcolor,ncolor))
 
-    sendColor: (color) ->
+    sendColor: (color,xcol) ->
       if (tradfriReady)
-        tradfriHub.setColorTemp(@address, color, @_transtime
+        tradfriHub.setColorXY(@address, parseInt(xcol), parseInt(color[1]), @_transtime
+        #tradfriHub.setColorTemp(@address, color, @_transtime
         ).then( (res) =>
-          env.logger.debug ("New Color send to device #{color}")
+          env.logger.debug ("New Color send to device")
           return Promise.resolve()
         ).catch( (error) =>
           if (error == "4.05")
@@ -640,37 +646,11 @@ module.exports = (env) ->
     destroy: ->
       super()
 
-    xyY_to_kelvin = (x, y) =>
-      n = (x/65535-0.3320) / (y/65535-0.1858)
-      kelvin = parseInt((-449*n**3 + 3525*n**2 - 6823.3*n + 5520.33) + 0.5)
-
-    kelvin_to_xy = (T, white_spectrum_bulb=false) =>
-      if T <= 4000
-        x = -0.2661239*(10**9)/T**3 - 0.2343589*(10**6)/T**2 + 0.8776956*(10**3)/T + 0.17991
-      else if T <= 25000
-        x = -3.0258469*(10**9)/T**3 + 2.1070379*(10**6)/T**2 + 0.2226347*(10**3)/T + 0.24039
-
-      if T <= 2222
-        y = -1.1063814*x**3 - 1.3481102*x**2 + 2.18555832*x - 0.20219683
-      else if T <= 4000
-        y = -0.9549476*x**3 - 1.37418593*x**2 + 2.09137015*x - 0.16748867
-      else if T <= 25000
-        y = 3.081758*x**3 - 5.8733867*x**2 + 3.75112997*x - 0.37001483
-
-      xr = x*65535+0.5
-      yr = y*65535+0.5
-
-      [
-        parseInt(xr)
-        parseInt(yr)
-      ]
-
-
 ##############################################################
 # TradfriDimmerTempSliderItem
 ##############################################################
 
-  class TradfriRGB extends TradfriDimmer
+  class TradfriRGB extends TradfriDimmerTemp
 
     cmin = 24933
     cmax = 33137
@@ -755,16 +735,6 @@ module.exports = (env) ->
 
     getTemplateName: -> "tradfridimmer-rgb"
 
-    getColor: -> Promise.resolve(@_color)
-
-    _setColor: (color) =>
-      cassert(not isNaN(color))
-      cassert color >= 0
-      cassert color <= 100
-      if @_color is color then return
-      @_color = color
-      @emit "color", color
-
     _setHue: (hueVal) ->
       hueVal = parseFloat(hueVal)
       assert not isNaN(hueVal)
@@ -785,35 +755,6 @@ module.exports = (env) ->
 
     getSat: -> Promise.resolve(@_sat)
 
-
-    setColor: (color) =>
-      env.logger.debug (color)
-      if @_color is color then return Promise.resolve true
-      ncolor=Math.round (min + Math.abs(color-100) / 100 * (max-min))
-      env.logger.debug (ncolor)
-      tcolor=Color.kelvin_to_xy(ncolor)
-      env.logger.debug (tcolor)
-      ncolor=Math.round (cmin + color / 100 * (cmax-cmin))
-      @_setColor(color)
-      return Promise.resolve(@sendColor(tcolor,ncolor))
-
-    sendColor: (color,xcol) ->
-      if (tradfriReady)
-        tradfriHub.setColorXY(@address, parseInt(xcol), parseInt(color[1]), @_transtime
-        #tradfriHub.setColorTemp(@address, color, @_transtime
-        ).then( (res) =>
-          env.logger.debug ("New Color send to device1 #{color}")
-          return Promise.resolve()
-        ).catch( (error) =>
-          if (error == "4.05")
-            env.logger.error ("set device #{@name} error: tradfri hub doesn't have configured this device")
-          else
-            env.logger.error ("set device #{@name} error: gateway not reachable")
-            Tradfri_connection.emit 'error', (error)
-          return Promise.reject()
-        )
-      else
-        return Promise.reject()
 
     # h=0-360,s=0-1,l=0-1
     setHuesat: (h,s,l=0.75) ->
@@ -1133,3 +1074,4 @@ module.exports = (env) ->
       return null
 
   return Tradfri_connection
+
