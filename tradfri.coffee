@@ -98,6 +98,7 @@ module.exports = (env) ->
                 when device[3][1] == "TRADFRI bulb E27 CWS opal 600lm" then "TradfriRGB"
                 when device[3][1] == "TRADFRI remote control" then "TradfriActor"
                 when device[3][1] == "TRADFRI motion sensor" then "TradfriActor"
+                when device[3][1] == "TRADFRI wireless dimmer" then "TradfriActor"
                 else "TradfriDimmer"
               config = {
                     class: @lclass,
