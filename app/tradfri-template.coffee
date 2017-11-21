@@ -177,7 +177,31 @@ $(document).on "templateinit", (event) ->
           .done(ajaxShowToast)
           .fail(ajaxAlertFail)
 
+
+  class TradfriHubItem extends pimatic.PresenceItem
+    constructor: (templData, @device) ->
+      super(templData, @device)
+      @rbutID = "rbutton-#{templData.deviceId}"
+      @dbutID = "dbutton-#{templData.deviceId}"
+
+    getItemTemplate: => 'tradfrihub'
+
+    afterRender: (elements) ->
+      super(elements)
+
+    setReboot: ->
+      if confirm __("Do you really want to restart the hub")
+        @device.rest.setReboot(global: no)
+          .done(ajaxShowToast)
+          .fail(ajaxAlertFail)
+
+    setDiscovery: ->
+      @device.rest.setDiscovery(global: no)
+        .done(ajaxShowToast)
+        .fail(ajaxAlertFail)
+
   pimatic.templateClasses['tradfridimmer-dimmer'] = TradfriDimmerSliderItem
   pimatic.templateClasses['tradfridimmer-temp'] = TradfriDimmerTempSliderItem
   pimatic.templateClasses['tradfridimmer-temp-buttons'] = TradfriDimmerTempButtonItem
   pimatic.templateClasses['tradfridimmer-rgb'] = TradfriDimmerRGBItem
+  pimatic.templateClasses['tradfrihub'] = TradfriHubItem

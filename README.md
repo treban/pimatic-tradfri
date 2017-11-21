@@ -28,7 +28,7 @@ This plugin depends on tradfri-coapdtls.
 
 You can load the plugin by adding following in the config.json from your pimatic server:
 
-PSK and identity dont have to be filled!
+You only need the security id which is backside of the gateway. At startup the plugin discovers the gateway.
 
     {
       "plugin": "tradfri",
@@ -115,3 +115,9 @@ So if the lights are not syncron, the lights will change the state not in same w
 * 0.1.15:
   * BUG FIX (#18)
   * compatibility warning removed
+
+* 0.1.16:
+  * BUG FIX (#19)
+  * Reboot and pairing mode buttons for hub device
+  * Floalt Support added
+  * auto discovery of the gateway at startup

@@ -67,3 +67,16 @@ script#tradfridimmer-temp-buttons-template(type='text/template  ')
             a.ui-first-child.ui-btn.ui-corner-all.wbutton(name='warmButton', data-bind='click: setWarm') Warm
             a.ui-btn.ui-corner-all.nbutton(name='normalButton', data-bind='click: setNormal') Normal
             a.ui-last-child.ui-btn.ui-corner-all.cbutton(name='coldButton', data-bind='click: setCold') Cold
+
+
+script#tradfrihub-template(type='text/template')
+  li.sortable.device.no-header.tradfri-device
+    label.device-label(data-bind="text: name, tooltip: $data.labelTooltipHtml")
+    div.ui-temp
+      span.attributes(data-bind="template: { name: 'attribute-template', foreach: $data.device.attributes, afterRender: $data.afterAttributeRender }")
+      div.ui-spacer
+      div.ui-midspacer
+      .button-control.ui-controlgroup.ui-controlgroup-horizontal.ui-corner-all.ui-mini.no-carousel-slide(data-role='controlgroup', data-type='horizontal', data-mini='true', data-enhanced='true')
+        .ui-controlgroup-controls
+          a.ui-first-child.ui-btn.ui-corner-all.rbutton(name='reboot', data-bind='click: setReboot') Reboot
+          a.ui-last-child.ui-btn.ui-corner-all.dbutton(name='start pairing', data-bind='click: setDiscovery') Discovery

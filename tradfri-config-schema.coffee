@@ -1,7 +1,7 @@
 module.exports = {
   title: "tradfri config options"
   type: "object"
-  required: ["secID", "hubIP"]
+  required: ["secID"]
   properties:
     secID:
       description: "Security ID"
@@ -10,7 +10,8 @@ module.exports = {
     hubIP:
       description: "Hub IP"
       type: "string"
-      required: yes
+      default: ""
+      required: no
     identity:
       description: "generated at first connect"
       type: "string"

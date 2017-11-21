@@ -10,6 +10,7 @@ module.exports = (env) ->
   _ = env.require 'lodash'
   M = env.matcher
   Promise = env.require 'bluebird'
+  mdns = require 'mdns'
 
   tradfriHub = null
   tradfriReady = false
@@ -29,10 +30,11 @@ module.exports = (env) ->
       @cfg=@config
       framework = @framework
       first=true
-
       @newready=false
 
-      env.logger.debug ("tradfri cfg: Gateway IP: #{@hubIP}")
+      if ( @secID == "" or @secID == undefined or @secID == null)
+        env.logger.error ("tradfri cfg: Security key is not set!")
+        return
 
       deviceConfigDef = require("./device-config-schema.coffee")
       @framework.deviceManager.registerDeviceClass("TradfriHub", {
@@ -83,6 +85,32 @@ module.exports = (env) ->
           mobileFrontend.registerAssetFile 'css', "pimatic-tradfri/app/spectrum.css"
         else
           env.logger.warn "pimatic tradfri could not find the mobile-frontend. No gui will be available"
+          
+        if ( @hubIP == "" )
+          env.logger.debug ("tradfri cfg: Gateway IP not set ... start autodiscover")
+          sequence = [
+            mdns.rst.DNSServiceResolve(),
+            mdns.rst.getaddrinfo({families:[4]}),
+            mdns.rst.makeAddressesUnique()
+            ]
+          browser = mdns.createBrowser(mdns.udp('coap'), { resolverSequence: sequence })
+          browser.on('serviceUp', (service) =>
+            browser.stop()
+            if (@hubIP == "")
+              @hubIP = service.addresses[0]
+              env.logger.debug("Gateway found. Version: #{service.txtRecord.version} IP #{@hubIP}")
+              @cfg.hubIP=@hubIP
+              @framework.pluginManager.updatePluginConfig 'tradfri', @cfg
+              env.logger.debug("IP saved to config")
+              @startSession()
+          )
+          browser.on('error', (error) =>
+            env.logger.error("Discovery error!")
+          )
+          browser.start()
+        else
+          env.logger.debug ("tradfri cfg: Gateway IP: #{@hubIP}")
+          @startSession()
 
       @framework.deviceManager.on 'discover', (eventData) =>
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices"
@@ -96,6 +124,9 @@ module.exports = (env) ->
                 when device[3][1] == "TRADFRI bulb E27 WS clear 950lm" then "TradfriDimmerTemp"
                 when device[3][1] == "TRADFRI bulb E27 opal 1000lm" then "TradfriDimmer"
                 when device[3][1] == "TRADFRI bulb E27 CWS opal 600lm" then "TradfriRGB"
+                when device[3][1] == "FLOALT panel WS 30x90" then "TradfriDimmerTemp"
+                when device[3][1] == "FLOALT panel WS 30x30" then "TradfriDimmerTemp"
+                when device[3][1] == "FLOALT panel WS 60x60" then "TradfriDimmerTemp"
                 when device[3][1] == "TRADFRI remote control" then "TradfriActor"
                 when device[3][1] == "TRADFRI motion sensor" then "TradfriActor"
                 when device[3][1] == "TRADFRI wireless dimmer" then "TradfriActor"
@@ -165,6 +196,13 @@ module.exports = (env) ->
           @framework.deviceManager.discoverMessage 'pimatic-tradfri', "gateway not reachable"
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices finished"
 
+      @.on 'error', (err) =>
+        env.logger.error("Tradfri gateway is not reachable anymore!")
+        tradfriHub.finish(true)
+        tradfriReady=false
+        @newready=true
+
+    startSession: () =>
       @connect()
       reconnect = setInterval ( =>
         if (!tradfriReady)
@@ -186,12 +224,6 @@ module.exports = (env) ->
             @emit 'error'
           @newready=false
       ),10000
-
-      @.on 'error', (err) =>
-        env.logger.error("Tradfri gateway is not reachable anymore!")
-        tradfriHub.finish(true)
-        tradfriReady=false
-        @newready=true
 
     uniqueId: (length=8) =>
       id = ""
@@ -242,7 +274,7 @@ module.exports = (env) ->
 
   class TradfriHub extends env.devices.Sensor
 
-    template: "presence"
+    template: "tradfrihub"
     _presence: undefined
 
     constructor: (@config,lastState) ->
@@ -250,7 +282,6 @@ module.exports = (env) ->
       @id = @config.id
       @ntpserver = @config.ntpserver
       @_presence = lastState?.presence?.value or false
-      @_psk = lastState?.psk?.value or false
       super()
 
       Tradfri_connection.on 'ready', =>
@@ -278,6 +309,10 @@ module.exports = (env) ->
         params:
           presence:
             type: "boolean"
+      setReboot:
+        description: 'reboot hub'
+      setDiscovery:
+        description: 'activate pairing mode'
 
     _setPresence: (value) ->
       if @_presence is value then return
@@ -289,6 +324,32 @@ module.exports = (env) ->
       return Promise.resolve()
 
     getPresence: -> Promise.resolve(@_presence)
+
+    setReboot: (state) ->
+      if (tradfriReady)
+        tradfriHub.setReboot(@address,@_transtime).then( (res) =>
+          env.logger.debug ("reboot tradfri hub")
+          return Promise.resolve()
+        ).catch((error) =>
+          env.logger.error ("set device #{@name} error: gateway not reachable : #{error}")
+          Tradfri_connection.emit 'error', (error)
+          return Promise.reject()
+        )
+      else
+        return Promise.reject()
+
+    setDiscovery: (state) ->
+      if (tradfriReady)
+        tradfriHub.setDiscovery(@address,@_transtime).then( (res) =>
+          env.logger.debug ("pairing mode active for 30 secounds")
+          return Promise.resolve()
+        ).catch((error) =>
+          env.logger.error ("set device #{@name} error: gateway not reachable")
+          Tradfri_connection.emit 'error', (error)
+          return Promise.reject()
+        )
+      else
+        return Promise.reject()
 
 ##############################################################
 # Tradfri Actor Devices
@@ -1075,4 +1136,3 @@ module.exports = (env) ->
       return null
 
   return Tradfri_connection
-
