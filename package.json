@@ -27,7 +27,8 @@
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "tradfri-coapdtls": ">=0.0.13"
+    "tradfri-coapdtls": ">=0.0.15",
+    "mdns": ">=2.3.4"
   },
   "peerDependencies": {
     "pimatic": ">=0.9.0"
