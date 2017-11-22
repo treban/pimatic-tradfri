@@ -40,7 +40,9 @@
   "bugs": {
     "url": "https://github.com/treban/pimatic-tradfri/issues"
   },
-  "scripts": {},
+  "scripts": {
+    "preinstall":"sudo apt-get install build-essential libavahi-compat-libdnssd-dev"
+  },
   "maintainers": [
     {
       "name": "treban",
