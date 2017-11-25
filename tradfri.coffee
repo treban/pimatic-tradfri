@@ -10,7 +10,7 @@ module.exports = (env) ->
   _ = env.require 'lodash'
   M = env.matcher
   Promise = env.require 'bluebird'
-  mdns = require 'mdns'
+#  mdns = require 'mdns'
 
   tradfriHub = null
   tradfriReady = false
@@ -85,32 +85,32 @@ module.exports = (env) ->
           mobileFrontend.registerAssetFile 'css', "pimatic-tradfri/app/spectrum.css"
         else
           env.logger.warn "pimatic tradfri could not find the mobile-frontend. No gui will be available"
-          
-        if ( @hubIP == "" )
-          env.logger.debug ("tradfri cfg: Gateway IP not set ... start autodiscover")
-          sequence = [
-            mdns.rst.DNSServiceResolve(),
-            mdns.rst.getaddrinfo({families:[4]}),
-            mdns.rst.makeAddressesUnique()
-            ]
-          browser = mdns.createBrowser(mdns.udp('coap'), { resolverSequence: sequence })
-          browser.on('serviceUp', (service) =>
-            browser.stop()
-            if (@hubIP == "")
-              @hubIP = service.addresses[0]
-              env.logger.debug("Gateway found. Version: #{service.txtRecord.version} IP #{@hubIP}")
-              @cfg.hubIP=@hubIP
-              @framework.pluginManager.updatePluginConfig 'tradfri', @cfg
-              env.logger.debug("IP saved to config")
-              @startSession()
-          )
-          browser.on('error', (error) =>
-            env.logger.error("Discovery error!")
-          )
-          browser.start()
-        else
-          env.logger.debug ("tradfri cfg: Gateway IP: #{@hubIP}")
-          @startSession()
+
+      #  if ( @hubIP == "" )
+      #    env.logger.debug ("tradfri cfg: Gateway IP not set ... start autodiscover")
+      #    sequence = [
+      #      mdns.rst.DNSServiceResolve(),
+      #      mdns.rst.getaddrinfo({families:[4]}),
+      #      mdns.rst.makeAddressesUnique()
+      #      ]
+      #    browser = mdns.createBrowser(mdns.udp('coap'), { resolverSequence: sequence })
+      #    browser.on('serviceUp', (service) =>
+      #      browser.stop()
+      #      if (@hubIP == "")
+      #        @hubIP = service.addresses[0]
+      #        env.logger.debug("Gateway found. Version: #{service.txtRecord.version} IP #{@hubIP}")
+      #        @cfg.hubIP=@hubIP
+      #        @framework.pluginManager.updatePluginConfig 'tradfri', @cfg
+      #        env.logger.debug("IP saved to config")
+      #        @startSession()
+      #    )
+      #    browser.on('error', (error) =>
+      #      env.logger.error("Discovery error!")
+      #    )
+      #    browser.start()
+      #  else
+        env.logger.debug ("tradfri cfg: Gateway IP: #{@hubIP}")
+        @startSession()
 
       @framework.deviceManager.on 'discover', (eventData) =>
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices"
