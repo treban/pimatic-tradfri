@@ -27,7 +27,7 @@
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "tradfri-coapdtls": ">=0.0.16"
+    "tradfri-coapdtls": ">=0.0.17"
   },
   "peerDependencies": {
     "pimatic": ">=0.9.0"

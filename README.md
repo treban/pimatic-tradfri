@@ -121,3 +121,6 @@ So if the lights are not syncron, the lights will change the state not in same w
   * Reboot and pairing mode buttons for hub device
   * Floalt Support added
   * auto discovery of the gateway at startup
+
+* 0.1.17:
+  * Hotfix dependency bug
