@@ -19,7 +19,7 @@
     "app/spectrum.css",
     "app/spectrum.js"
   ],
-  "version": "0.1.16",
+  "version": "0.1.17",
   "homepage": "https://github.com/treban/pimatic-tradfri",
   "repository": {
     "type": "git",
