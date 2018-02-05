@@ -18,7 +18,7 @@ This plugin needs at least gateway version 1.2.42 !
 
 ### Installation
 
-Just activate the plugin in your pimatic config. The plugin manager automatically installs the package with his dependencys.
+Just activate the plugin in your pimatic config. The plugin manager automatically installs the package with his dependencies.
 
 ### Software dependencies
 
@@ -26,16 +26,24 @@ This plugin depends on tradfri-coapdtls.
 
 ### Configuration
 
-You can load the plugin by adding following in the config.json from your pimatic server:
+You can load the plugin by adding following in the "plugins" section in config.json from your pimatic server:
 
-You only need the security id which is backside of the gateway. At startup the plugin discovers the gateway.
+You only need the security id which is backside of the gateway (i.e. Security Code) and the gateway's IP address. At startup the plugin discovers the gateway.
+
+    {
+      "plugin": "tradfri",
+      "secID": "GATEWAY KEY",
+      "hubIP": "GATEWAY IP"
+    }
+
+Configuration after discovery.
 
     {
       "plugin": "tradfri",
       "secID": "GATEWAY KEY",
       "hubIP": "GATEWAY IP",
-      "identity": ""
-      "psk": ""
+      "identity": "",
+      "psk": "",
       "debug": true
     }
 
