@@ -1016,7 +1016,8 @@ module.exports = (env) ->
     parseAction: (input, context) =>
       TradfriDevices = _(@framework.deviceManager.devices).values().filter(
         (device) => _.includes [
-          'TradfriDimmerTemp'
+          'TradfriDimmerTemp',
+          'TradfriRGB'
         ], device.config.class
       ).value()
 

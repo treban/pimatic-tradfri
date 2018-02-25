@@ -57,8 +57,14 @@ make an autodiscover.
 
 ### Actions
 
-set color temp <dev> to <colortemperature>   (0-100)  
-set color rgb <dev> to <#0011ff>   (rgb value in hex with leading hash )  
+set color temp \<dev> to \<colortemperature>   (0-100)  
+set color rgb \<dev> to \<#0011ff>   (rgb value in hex with leading hash )  
+
+Note that you can also use the standard pimatic actions for dimmers, sensors and switches.  
+See https://pimatic.org/guide/usage/rules/ for examples.
+
+Example:
+dim \<dev> to \<dimpercentage>
 
 ### NOTES
 
