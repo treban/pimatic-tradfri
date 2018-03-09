@@ -117,32 +117,39 @@ module.exports = (env) ->
         if (tradfriReady)
           tradfriHub.getAllDevices().then( (devices)=>
             devices.forEach((device) =>
-              @lclass = switch
-                when device[3][1] == "TRADFRI bulb E27 WS opal 980lm" then "TradfriDimmerTemp"
-                when device[3][1] == "TRADFRI bulb E14 WS opal 400lm" then "TradfriDimmerTemp"
-                when device[3][1] == "TRADFRI bulb GU10 WS 400lm" then "TradfriDimmerTemp"
-                when device[3][1] == "TRADFRI bulb E27 WS clear 950lm" then "TradfriDimmerTemp"
-                when device[3][1] == "TRADFRI bulb E27 opal 1000lm" then "TradfriDimmer"
-                when device[3][1] == "TRADFRI bulb E27 CWS opal 600lm" then "TradfriRGB"
-                when device[3][1] == "FLOALT panel WS 30x90" then "TradfriDimmerTemp"
-                when device[3][1] == "FLOALT panel WS 30x30" then "TradfriDimmerTemp"
-                when device[3][1] == "FLOALT panel WS 60x60" then "TradfriDimmerTemp"
-                when device[3][1] == "TRADFRI remote control" then "TradfriActor"
-                when device[3][1] == "TRADFRI motion sensor" then "TradfriActor"
-                when device[3][1] == "TRADFRI wireless dimmer" then "TradfriActor"
-                else "TradfriDimmer"
-              config = {
-                    class: @lclass,
-                    name: device['9001'],
-                    id: "tradfri_#{device['9003']}",
-                    address: device['9003']
-              }
-              if (device[5750] == 2)
-                @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "LIGHT: #{config.name} - #{device[3][1]}", config )
-              if (device[5750] == 0)
-                @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "RemoteControl: #{config.name} - #{device[3][1]}", config )
-              if (device[5750] == 4)
-                @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "MotionSensor: #{config.name} - #{device[3][1]}", config )
+              
+              # Check if the device already exists in the config
+              newdevice = not @framework.deviceManager.devicesConfig.some (config_device, iterator) =>
+                config_device.address is device['9003']
+              
+              # If device does not exist, show it in auto discovery
+              if newdevice
+                @lclass = switch
+                  when device[3][1] == "TRADFRI bulb E27 WS opal 980lm" then "TradfriDimmerTemp"
+                  when device[3][1] == "TRADFRI bulb E14 WS opal 400lm" then "TradfriDimmerTemp"
+                  when device[3][1] == "TRADFRI bulb GU10 WS 400lm" then "TradfriDimmerTemp"
+                  when device[3][1] == "TRADFRI bulb E27 WS clear 950lm" then "TradfriDimmerTemp"
+                  when device[3][1] == "TRADFRI bulb E27 opal 1000lm" then "TradfriDimmer"
+                  when device[3][1] == "TRADFRI bulb E27 CWS opal 600lm" then "TradfriRGB"
+                  when device[3][1] == "FLOALT panel WS 30x90" then "TradfriDimmerTemp"
+                  when device[3][1] == "FLOALT panel WS 30x30" then "TradfriDimmerTemp"
+                  when device[3][1] == "FLOALT panel WS 60x60" then "TradfriDimmerTemp"
+                  when device[3][1] == "TRADFRI remote control" then "TradfriActor"
+                  when device[3][1] == "TRADFRI motion sensor" then "TradfriActor"
+                  when device[3][1] == "TRADFRI wireless dimmer" then "TradfriActor"
+                  else "TradfriDimmer"
+                config = {
+                      class: @lclass,
+                      name: device['9001'],
+                      id: "tradfri_#{device['9003']}",
+                      address: device['9003']
+                }
+                if (device[5750] == 2)
+                  @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "LIGHT: #{config.name} - #{device[3][1]}", config )
+                if (device[5750] == 0)
+                  @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "RemoteControl: #{config.name} - #{device[3][1]}", config )
+                if (device[5750] == 4)
+                  @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "MotionSensor: #{config.name} - #{device[3][1]}", config )
             )
           ).catch( (err) =>
             env.logger.error ("DeviceDiscover #{err}")
