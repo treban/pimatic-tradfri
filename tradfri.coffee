@@ -116,12 +116,10 @@ module.exports = (env) ->
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices"
         if (tradfriReady)
           tradfriHub.getAllDevices().then( (devices)=>
-            devices.forEach((device) =>
-              
+            devices.forEach((device) =>              
               # Check if the device already exists in the config
               newdevice = not @framework.deviceManager.devicesConfig.some (config_device, iterator) =>
-                config_device.address is device['9003']
-              
+                config_device.address is device['9003']              
               # If device does not exist, show it in auto discovery
               if newdevice
                 @lclass = switch
@@ -134,6 +132,8 @@ module.exports = (env) ->
                   when device[3][1] == "FLOALT panel WS 30x90" then "TradfriDimmerTemp"
                   when device[3][1] == "FLOALT panel WS 30x30" then "TradfriDimmerTemp"
                   when device[3][1] == "FLOALT panel WS 60x60" then "TradfriDimmerTemp"
+                when device[3][1] == "TRADFRI transformer 10W" then "TradfriDimmer"
+                when device[3][1] == "TRADFRI transformer 30W" then "TradfriDimmer"                  
                   when device[3][1] == "TRADFRI remote control" then "TradfriActor"
                   when device[3][1] == "TRADFRI motion sensor" then "TradfriActor"
                   when device[3][1] == "TRADFRI wireless dimmer" then "TradfriActor"
