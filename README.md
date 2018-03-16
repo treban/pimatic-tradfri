@@ -1,6 +1,12 @@
 pimatic-tradfri
 =======================
 
+
+[![build status](https://img.shields.io/travis/treban/pimatic-tradfri.svg?branch=master?style=flat-square)](https://travis-ci.org/treban/pimatic-tradfri)
+[![version](https://img.shields.io/npm/v/pimatic-tradfri.svg?branch=master?style=flat-square)](https://www.npmjs.com/package/pimatic-tradfri)
+[![downloads](https://img.shields.io/npm/v/pimatic-tradfri.svg?branch=master?style=flat-square)](https://www.npmjs.com/package/pimatic-tradfri)
+[![license](https://img.shields.io/github/license/treban/pimatic-tradfri.svg)](https://github.com/treban/pimatic-tradfri)
+
 This plugin provides a tradfri interface for [pimatic](https://pimatic.org/).
 
 IMPORTANT:
@@ -80,7 +86,6 @@ If you press the power button of the 5-button remote, the remote toggles the gro
 So if the lights are not syncron, the lights will change the state not in same way.
 
 ### ToDoList
-* controle the gateway
 * firmware updates
 * more actionproviders
 
@@ -138,3 +143,14 @@ So if the lights are not syncron, the lights will change the state not in same w
 
 * 0.1.17:
   * Hotfix dependency bug
+
+* 0.1.18:
+  * some small changes
+
+----------------------------
+#### Credits
+
+* [cklam2](https://github.com/cklam2)
+* [sweebee](https://github.com/sweebee)
+* [sverrevh](https://github.com/sverrevh)
+* [thexperiments](https://github.com/thexperiments)

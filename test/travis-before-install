@@ -1,0 +1,4 @@
+#!/bin/sh
+PLUGIN=$(basename $(pwd))
+mkdir -v -p node_modules/$PLUGIN
+cp -v *.coffee package.json node_modules/$PLUGIN
