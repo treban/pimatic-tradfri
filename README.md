@@ -4,7 +4,7 @@ pimatic-tradfri
 
 [![build status](https://img.shields.io/travis/treban/pimatic-tradfri.svg?branch=master?style=flat-square)](https://travis-ci.org/treban/pimatic-tradfri)
 [![version](https://img.shields.io/npm/v/pimatic-tradfri.svg?branch=master?style=flat-square)](https://www.npmjs.com/package/pimatic-tradfri)
-[![downloads](https://img.shields.io/npm/v/pimatic-tradfri.svg?branch=master?style=flat-square)](https://www.npmjs.com/package/pimatic-tradfri)
+[![downloads](https://img.shields.io/npm/dm/pimatic-tradfri.svg?branch=master?style=flat-square)](https://www.npmjs.com/package/pimatic-tradfri)
 [![license](https://img.shields.io/github/license/treban/pimatic-tradfri.svg)](https://github.com/treban/pimatic-tradfri)
 
 This plugin provides a tradfri interface for [pimatic](https://pimatic.org/).

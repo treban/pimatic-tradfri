@@ -3,7 +3,7 @@ module.exports = (env) ->
 
   class Color
 
-    hue2rgb = (p, q, t) =>
+    hue2rgb = (p, q, t) ->
       if t < 0
         t += 1
       if (t > 1)
@@ -28,9 +28,9 @@ module.exports = (env) ->
         g = hue2rgb(p, q, h)
         b = hue2rgb(p, q, h - 1/3)
 
-      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+      return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)]
 
-    check = (val) =>
+    check = (val) ->
       val = Math.max(Math.min(val, 255), 0) / 255.0
       if val <= 0.04045
         return val / 12.92
@@ -51,7 +51,7 @@ module.exports = (env) ->
       else
         return [ parseInt(X*65535+0.5)/total , parseInt(Y*65535+0.5)/total, parseInt(Y*65535+0.5)/total ]
 
-    @kelvin_to_xy = (T) =>
+    @kelvin_to_xy = (T) ->
 # Source https://en.wikipedia.org/wiki/Planckian_locus#Approximation
 # and http://fcam.garage.maemo.org/apiDocs/_color_8cpp_source.html
       if T <= 4000
@@ -75,6 +75,6 @@ module.exports = (env) ->
       ]
 
  # Source: https://en.wikipedia.org/wiki/Color_temperature#Approximation
-    @xyY_to_kelvin = (x, y) =>
+    @xyY_to_kelvin = (x, y) ->
       n = (x/65535-0.3320) / (y/65535-0.1858)
       kelvin = parseInt((-449*n**3 + 3525*n**2 - 6823.3*n + 5520.33) + 0.5)

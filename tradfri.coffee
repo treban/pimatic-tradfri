@@ -1,5 +1,5 @@
 
-'use strict';
+'use strict'
 
 module.exports = (env) ->
 
@@ -62,12 +62,12 @@ module.exports = (env) ->
         createCallback: (config, lastState) => new TradfriGroupScene(config, @, @framework, lastState)
       })
       @framework.deviceManager.registerDeviceClass("TradfriActor", {
-       configDef: deviceConfigDef.TradfriActor,
-       createCallback: (config, lastState) => new TradfriActor(config, @, @framework, lastState)
+        configDef: deviceConfigDef.TradfriActor,
+        createCallback: (config, lastState) => new TradfriActor(config, @, @framework, lastState)
       })
       @framework.deviceManager.registerDeviceClass("TradfriRGB", {
-       configDef: deviceConfigDef.TradfriDimmer,
-       createCallback: (config, lastState) => new TradfriRGB(config, @, @framework, lastState)
+        configDef: deviceConfigDef.TradfriDimmer,
+        createCallback: (config, lastState) => new TradfriRGB(config, @, @framework, lastState)
       })
 
       @framework.ruleManager.addActionProvider(new TradfriDimmerTempActionProvider(@framework))
@@ -139,10 +139,10 @@ module.exports = (env) ->
                   when device[3][1] == "TRADFRI wireless dimmer" then "TradfriActor"
                   else "TradfriDimmer"
                 config = {
-                      class: @lclass,
-                      name: device['9001'],
-                      id: "tradfri_#{device['9003']}",
-                      address: device['9003']
+                  class: @lclass,
+                  name: device['9001'],
+                  id: "tradfri_#{device['9003']}",
+                  address: device['9003']
                 }
                 if (device[5750] == 2)
                   @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "LIGHT: #{config.name} - #{device[3][1]}", config )
@@ -157,43 +157,43 @@ module.exports = (env) ->
           tradfriHub.getAllGroups().then( (groups)=>
             groups.forEach((group) =>
               config = {
-                    class: "TradfriGroup",
-                    name: group['9001'],
-                    id: "tradfri_#{group['9003']}",
-                    address: group['9003']
+                class: "TradfriGroup",
+                name: group['9001'],
+                id: "tradfri_#{group['9003']}",
+                address: group['9003']
               }
               @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "GROUP: #{config.name}", config )
               config = {
-                    class: "TradfriGroupScene",
-                    name: "Scenes #{group['9001']}",
-                    id: "tradfri_scene_#{group['9003']}",
-                    address: group['9003']
+                class: "TradfriGroupScene",
+                name: "Scenes #{group['9001']}",
+                id: "tradfri_scene_#{group['9003']}",
+                address: group['9003']
               }
               buttonsArray=[]
               tradfriHub.getAllScenes(config.address).then( (scenes)=>
                 scenes.forEach((scene) =>
                   buttonConfig =
-                      id : "tradfri_#{group['9003']}_#{scene['9003']}"
-                      text : "#{scene['9001']}"
-                      address : "#{scene['9003']}"
+                    id : "tradfri_#{group['9003']}_#{scene['9003']}"
+                    text : "#{scene['9001']}"
+                    address : "#{scene['9003']}"
                   buttonsArray.push(buttonConfig)
                 )
                 config.buttons=buttonsArray
                 @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "Scenes: #{config.name}", config )
               ).catch( (err) =>
-                  env.logger.error(err)
+                env.logger.error(err)
               )
             )
           ).catch( (err) =>
-              env.logger.error(err)
+            env.logger.error(err)
           )
 
           tradfriHub.getGatewayInfo().then( (gw) =>
             config = {
-                  class: "TradfriHub",
-                  name: "TradfriHub",
-                  id: "tradfri_hub",
-                  ntpserver: gw['9023']
+              class: "TradfriHub",
+              name: "TradfriHub",
+              id: "tradfri_hub",
+              ntpserver: gw['9023']
             }
             @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "GATEWAY: #{config.name} - #{@hubIP}", config )
           ).catch( (err) =>
@@ -1095,7 +1095,7 @@ module.exports = (env) ->
       )
 
     executeAction: (simulate) =>
-        return @_doExecuteAction(simulate)
+      return @_doExecuteAction(simulate)
 
     hasRestoreAction: -> yes
 
