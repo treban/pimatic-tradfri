@@ -638,22 +638,22 @@ module.exports = (env) ->
       @_state = lastState?.state?.value or off
       @_transtime=@transtime? or 5
       super()
-      if (tradfriReady)
-        @makeObserver()
-      Tradfri_connection.on 'ready', =>
-        @makeObserver()
+#      if (tradfriReady)
+#        @makeObserver()
+#      Tradfri_connection.on 'ready', =>
+#        @makeObserver()
 
-    makeObserver: ->
-      tradfriHub.setObserver(@address,@observer).then ((res) =>
-        env.logger.debug ("Obeserving now the device #{@config.name}")
-        #env.logger.debug (res)
-      ).catch( (error) =>
-        if (error == '4.04')
-          env.logger.error ("Observe device #{@name} error: tradfri hub doesn't have configured this device")
-        else
-          env.logger.error ("Observe device #{@name} error : #{error}")
-          Tradfri_connection.emit 'error', (error)
-      )
+#    makeObserver: ->
+#      tradfriHub.setObserver(@address,@observer).then ((res) =>
+#        env.logger.debug ("Obeserving now the device #{@config.name}")
+#        #env.logger.debug (res)
+#      ).catch( (error) =>
+#        if (error == '4.04')
+#          env.logger.error ("Observe device #{@name} error: tradfri hub doesn't have configured this device")
+#        else
+#          env.logger.error ("Observe device #{@name} error : #{error}")
+#          Tradfri_connection.emit 'error', (error)
+#      )
 
     observer: (res) =>
       env.logger.debug ("New device values received for #{@name}")
