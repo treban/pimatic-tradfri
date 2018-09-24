@@ -147,6 +147,9 @@ So if the lights are not syncron, the lights will change the state not in same w
 * 0.1.18:
   * some small changes
 
+* 0.1.19:
+  * add support for smart wall plugs (beta)
+
 ----------------------------
 #### Credits
 

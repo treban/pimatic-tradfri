@@ -69,6 +69,10 @@ module.exports = (env) ->
         configDef: deviceConfigDef.TradfriDimmer,
         createCallback: (config, lastState) => new TradfriRGB(config, @, @framework, lastState)
       })
+      @framework.deviceManager.registerDeviceClass("TradfriPlug", {
+        configDef: deviceConfigDef.TradfriPlug,
+        createCallback: (config, lastState) => new TradfriPlug(config, @, @framework, lastState)
+      })
 
       @framework.ruleManager.addActionProvider(new TradfriDimmerTempActionProvider(@framework))
       @framework.ruleManager.addActionProvider(new TradfriDimmerRGBActionProvider(@framework))
@@ -116,10 +120,10 @@ module.exports = (env) ->
         @framework.deviceManager.discoverMessage 'pimatic-tradfri', "scanning for tradfri devices"
         if (tradfriReady)
           tradfriHub.getAllDevices().then( (devices)=>
-            devices.forEach((device) =>              
+            devices.forEach((device) =>
               # Check if the device already exists in the config
               newdevice = not @framework.deviceManager.devicesConfig.some (config_device, iterator) =>
-                config_device.address is device['9003']              
+                config_device.address is device['9003']
               # If device does not exist, show it in auto discovery
               if newdevice
                 @lclass = switch
@@ -133,10 +137,11 @@ module.exports = (env) ->
                   when device[3][1] == "FLOALT panel WS 30x30" then "TradfriDimmerTemp"
                   when device[3][1] == "FLOALT panel WS 60x60" then "TradfriDimmerTemp"
                   when device[3][1] == "TRADFRI transformer 10W" then "TradfriDimmer"
-                  when device[3][1] == "TRADFRI transformer 30W" then "TradfriDimmer"                  
+                  when device[3][1] == "TRADFRI transformer 30W" then "TradfriDimmer"
                   when device[3][1] == "TRADFRI remote control" then "TradfriActor"
                   when device[3][1] == "TRADFRI motion sensor" then "TradfriActor"
                   when device[3][1] == "TRADFRI wireless dimmer" then "TradfriActor"
+                  when device[3][1] == "TRADFRI control outlet" then "TradfriPlug"
                   else "TradfriDimmer"
                 config = {
                   class: @lclass,
@@ -146,6 +151,8 @@ module.exports = (env) ->
                 }
                 if (device[5750] == 2)
                   @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "LIGHT: #{config.name} - #{device[3][1]}", config )
+                if (device[5750] == 3)
+                  @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "Wall-Plug: #{config.name} - #{device[3][1]}", config )
                 if (device[5750] == 0)
                   @framework.deviceManager.discoveredDevice( 'pimatic-tradfri ', "RemoteControl: #{config.name} - #{device[3][1]}", config )
                 if (device[5750] == 4)
@@ -618,6 +625,69 @@ module.exports = (env) ->
       else
         return Promise.reject()
 
+##############################################################
+# TradfriPlug
+##############################################################
+
+  class TradfriPlug extends env.devices.SwitchActuator
+
+    constructor: (@config, @plugin, @framework, lastState) ->
+      @id = @config.id
+      @name = @config.name
+      @address = @config.address
+      @_state = lastState?.state?.value or off
+      @_transtime=@transtime? or 5
+      super()
+      if (tradfriReady)
+        @makeObserver()
+      Tradfri_connection.on 'ready', =>
+        @makeObserver()
+
+    makeObserver: ->
+      tradfriHub.setObserver(@address,@observer).then ((res) =>
+        env.logger.debug ("Obeserving now the device #{@config.name}")
+        #env.logger.debug (res)
+      ).catch( (error) =>
+        if (error == '4.04')
+          env.logger.error ("Observe device #{@name} error: tradfri hub doesn't have configured this device")
+        else
+          env.logger.error ("Observe device #{@name} error : #{error}")
+          Tradfri_connection.emit 'error', (error)
+      )
+
+    observer: (res) =>
+      env.logger.debug ("New device values received for #{@name}")
+      #env.logger.debug (res)
+      if (typeof res['3312'] != "undefined" && res['3312'] != null)
+        if ( isNaN(res['3312'][0]['5850']) )
+        else
+          env.logger.debug ("ON/OFF: " + res['3312'][0]['5850'])
+          if ( ! res['3312'][0]['5850'] )
+            @_setState(false)
+          else
+            @_setState(true)
+
+    destroy: ->
+      super()
+
+    changeStateTo: (state) ->
+      if (tradfriReady)
+        tradfriHub.setSmartSwitch(@address, {
+          state: state,
+        }).then( (res) =>
+          env.logger.debug ("New value send to device")
+          @_setState(state)
+          return Promise.resolve()
+        ).catch( (error) =>
+          if (error == "4.05")
+            env.logger.error ("set device #{@name} error: tradfri hub doesn't have configured this device")
+          else
+            env.logger.error ("set device #{@name} error: gateway not reachable")
+            Tradfri_connection.emit 'error', (error)
+          return Promise.reject()
+        )
+      else
+        return Promise.reject()
 
 
 ##############################################################

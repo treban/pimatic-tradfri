@@ -40,6 +40,14 @@ module.exports = {
         description: "Tradfri address"
         type: "integer"
   },
+  TradfriPlug: {
+    title: "Tradfri Smart Wall Plug"
+    type: "object"
+    properties:
+      address:
+        description: "Tradfri address"
+        type: "integer"
+  },
   TradfriScene: {
     title: "Tradfri Scene Group"
     type: "object"
