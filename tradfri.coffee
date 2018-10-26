@@ -644,6 +644,7 @@ module.exports = (env) ->
         @makeObserver()
 
     makeObserver: ->
+      env.logger.debug ("TRY Obeserving now the device #{@config.name}")
       tradfriHub.setObserver(@address,@observer).then( (res) =>
         env.logger.debug ("Obeserving now the device #{@config.name}")
         #env.logger.debug (res)
