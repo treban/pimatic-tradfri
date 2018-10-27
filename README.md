@@ -150,10 +150,13 @@ So if the lights are not syncron, the lights will change the state not in same w
 * 0.1.19:
   * add support for smart wall plugs (beta)
 
+* 0.1.20:
+  * fix for smart wall plugs
+
 ----------------------------
 #### Credits
 
 * [cklam2](https://github.com/cklam2)
-* [sweebee](https://github.com/sweebee)
 * [sverrevh](https://github.com/sverrevh)
+* [sweebee](https://github.com/sweebee)
 * [thexperiments](https://github.com/thexperiments)
