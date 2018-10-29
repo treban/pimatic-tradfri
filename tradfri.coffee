@@ -674,7 +674,7 @@ module.exports = (env) ->
     changeStateTo: (state) ->
       if (tradfriReady)
         tradfriHub.setSmartSwitch(@address, {
-          state: state
+          state: +state
         }).then( (res) =>
           env.logger.debug ("New value send to device")
           @_setState(state)
