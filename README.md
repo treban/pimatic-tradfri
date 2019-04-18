@@ -155,6 +155,10 @@ So if the lights are not syncron, the lights will change the state not in same w
 
 * 0.1.21:
   * hotfix for smart wall plugs
+
+* 0.1.22:
+  * hotfix for tradfri gateway version 1.8.25
+  * you must remove the identity and psk config parameters after upgrade 
 ----------------------------
 #### Credits
 

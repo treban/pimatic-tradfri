@@ -247,7 +247,7 @@ module.exports = (env) ->
     connect: () =>
       if (@psk == undefined or @psk == "" or @psk == null)
         env.logger.debug("PSK Handshake...")
-        @identity=@uniqueId(12)
+        @identity=@uniqueId(4)
         @cfg.identity=@identity
         tradfriHub = new TradfriCoapdtls({securityId: @secID,hubIpAddress: @hubIP, clientId: "Client_identity"})
         tradfriHub.connect().then( (val)=>
