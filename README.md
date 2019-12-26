@@ -87,78 +87,9 @@ So if the lights are not syncron, the lights will change the state not in same w
 
 ### ToDoList
 * firmware updates
-* more actionproviders
-
 
 ### ChangeLog
-* 0.1.6 - first public alpha version
-
-* 0.1.7 - New functions:
-  * Control light temperature
-  * Observing changes
-  * Goup function
-  * Gateway check
-  * Support for more lights
-  * code refactoring
-  * bugfixes
-
-* 0.1.8:
-  * code refactoring
-  * autoreconnect
-  * bugfixes
-
-* 0.1.9:
-  * Scenes/Moods
-  * Stepless light temperature change
-  * New device option: transition time for smooth changes
-  * Action provider for all features
-
-* 0.1.10:
-  * BUG FIX
-
-* 0.1.11:
-  * Remote and motion sensor as presence device with battery observation
-  * BUG FIX
-
-* 0.1.12:
-  * BUG FIX (#12) (#10)
-  * RGB Support
-  * Dimming slider for groups
-
-* 0.1.13:
-  * BUG FIX
-
-* 0.1.14:
-  * Support for gateway version 1.2.42
-
-* 0.1.15:
-  * BUG FIX (#18)
-  * compatibility warning removed
-
-* 0.1.16:
-  * BUG FIX (#19)
-  * Reboot and pairing mode buttons for hub device
-  * Floalt Support added
-  * auto discovery of the gateway at startup
-
-* 0.1.17:
-  * Hotfix dependency bug
-
-* 0.1.18:
-  * some small changes
-
-* 0.1.19:
-  * add support for smart wall plugs (beta)
-
-* 0.1.20:
-  * fix for smart wall plugs
-
-* 0.1.21:
-  * hotfix for smart wall plugs
-
-* 0.1.22:
-  * hotfix for tradfri gateway version 1.8.25
-  * you must remove the identity and psk config parameters after upgrade 
+[-> see CHANGELOG](https://github.com/treban/pimatic-tradfri/blob/master/CHANGELOG.md)
 ----------------------------
 #### Credits
 

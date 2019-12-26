@@ -28,8 +28,8 @@
   },
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
-    "tradfri-coapdtls": ">=0.0.18",
-    "lodash": "^4.16.4"
+    "tradfri-coapdtls": ">=0.1.0",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "blanket": "^1.2.3",

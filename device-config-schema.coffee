@@ -48,6 +48,14 @@ module.exports = {
         description: "Tradfri address"
         type: "integer"
   },
+  TradfriBlind: {
+    title: "Tradfri Blind"
+    type: "object"
+    properties:
+      address:
+        description: "Tradfri address"
+        type: "integer"
+  },
   TradfriScene: {
     title: "Tradfri Scene Group"
     type: "object"
