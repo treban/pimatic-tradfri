@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.23]
+### Added
+* #37 Blind support
+
 ## [0.1.22]
 ### Fixed
 * hotfix for tradfri gateway version 1.8.25, you must remove the identity and psk config parameters after upgrade
