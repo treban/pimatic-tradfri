@@ -70,4 +70,3 @@ module.exports = (grunt) ->
   grunt.registerTask "test", ["coffeelint", "mochaTest:test"]
   grunt.registerTask "coverage",
     ["blanket", "mochaTest:testBlanket", "mochaTest:coverage", "clean-coverage"]
-

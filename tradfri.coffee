@@ -284,13 +284,13 @@ module.exports = (env) ->
         @cfg.identity=@identity
         tradfriHub = new TradfriCoapdtls({securityId: @secID,hubIpAddress: @hubIP, clientId: @identity, psk: null})
         tradfriHub.connect().then( (key)=>
-            env.logger.debug("Gateway online - PSK Handshake successful: #{key}")
-            env.logger.debug("Establish secure connection... ")
-            @psk=key
-            @cfg.psk=@psk
-            @framework.pluginManager.updatePluginConfig 'tradfri', @cfg
-            env.logger.debug("PSK saved to config")
-            return @getInfo()
+          env.logger.debug("Gateway online - PSK Handshake successful: #{key}")
+          env.logger.debug("Establish secure connection... ")
+          @psk=key
+          @cfg.psk=@psk
+          @framework.pluginManager.updatePluginConfig 'tradfri', @cfg
+          env.logger.debug("PSK saved to config")
+          return @getInfo()
         ).catch( (error) =>
           env.logger.error ("Gateway is not reachable! PSK Handshake not successful!")
           env.logger.error (error)

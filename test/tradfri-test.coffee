@@ -75,12 +75,13 @@ describe "pimatic", ->
   describe 'startup', ->
 
     it "should startup", (finish) ->
-      startup = require('./startup')
+      startup = require("../node_modules/pimatic/startup")
       startup.startup().then( (fm)->
         framework = fm
         finish()
       ).catch(finish)
       return
+
 
     it "httpServer should run", (done)->
       http = require 'http'
@@ -98,4 +99,3 @@ describe "pimatic", ->
       ).on "error", (e) ->
         throw e
       return
-
