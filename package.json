@@ -34,7 +34,7 @@
   "devDependencies": {
     "bluebird": "^3.4.7",
     "cassert": "^0.1.2",
-    "decl-api": "0.0.22",
+    "decl-api": "0.0.24",
     "pimatic": ">=0.9.0",
     "blanket": "^1.2.3",
     "coffeescript": "^2.4.1",

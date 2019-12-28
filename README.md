@@ -89,6 +89,7 @@ So if the lights are not syncron, the lights will change the state not in same w
 * firmware updates
 
 ### ChangeLog
+
 [-> see CHANGELOG](https://github.com/treban/pimatic-tradfri/blob/master/CHANGELOG.md)
 ----------------------------
 #### Credits
