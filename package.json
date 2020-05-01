@@ -29,7 +29,8 @@
   "configSchema": "tradfri-config-schema.coffee",
   "dependencies": {
     "tradfri-coapdtls": ">=0.1.0",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "bluebird": "^3.4.7",
@@ -63,6 +64,9 @@
     }
   ],
   "scripts": {
-    "test": "grunt test"
-  }
+    "test": "grunt test",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
