@@ -888,7 +888,7 @@ module.exports = (env) ->
 
 
     setColor: (color) =>
-      if @_color is color then return Promise.resolve true
+      #if @_color is color then return Promise.resolve true
       ncolor=Math.round (min + Math.abs(color-100) / 100 * (max-min))
       tcolor=Color.kelvin_to_xy(ncolor)
       ncolor=Math.round (cmin + color / 100 * (cmax-cmin))
@@ -1203,7 +1203,7 @@ module.exports = (env) ->
         if simulate
           __("would dim %s to %s%%", @device.name, value)
         else
-          @device.setColor(value).then( => __("dimmed %s to %s%%", @device.name, value) )
+          @device.setColor(value).then( => __("Set color temp of %s to %s%%", @device.name, value) )
       )
 
     executeAction: (simulate) =>
