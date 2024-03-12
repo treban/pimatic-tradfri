@@ -1,3 +1,8 @@
+# 🛑 This project is no longer maintained! 
+As the Pimatic project is no longer maintained, 
+this plugin project will also be discontinued. 
+
+
 pimatic-tradfri
 =======================
 
